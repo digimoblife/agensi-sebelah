@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Agensi Sebelah — menyalakan / mematikan aplikasi lokal.
+#   bin/agensi start    nyalakan semua service lalu buka dashboard
+#   bin/agensi stop     matikan semua service (data tetap aman)
+#   bin/agensi status   lihat service yang berjalan
+#   bin/agensi restart  matikan lalu nyalakan lagi
+#   bin/agensi logs     ikuti log worker, scheduler, dan bot Telegram (Ctrl+C untuk keluar)
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+PORT="$(grep -E '^APP_PORT=' .env 2>/dev/null | cut -d= -f2 || true)"
+URL="http://localhost:${PORT:-8088}/admin"
+
+ensure_docker() {
+  if docker info >/dev/null 2>&1; then return; fi
+  echo "Menyalakan Docker Desktop..."
+  open -a Docker
+  for _ in $(seq 1 90); do
+    docker info >/dev/null 2>&1 && return
+    sleep 2
+  done
+  echo "Docker Desktop belum siap setelah 3 menit. Buka Docker Desktop secara manual lalu ulangi." >&2
+  exit 1
+}
+
+start() {
+  ensure_docker
+  echo "Menyalakan Agensi Sebelah..."
+  docker compose up -d
+  printf "Menunggu dashboard siap"
+  for _ in $(seq 1 60); do
+    if [ "$(curl -s -o /dev/null -w '%{http_code}' "$URL/login")" = "200" ]; then
+      echo
+      echo "Siap: $URL"
+      [ -z "${AGENSI_NO_OPEN:-}" ] && open "$URL"
+      return
+    fi
+    printf "."
+    sleep 2
+  done
+  echo
+  echo "Dashboard belum merespons. Cek dengan: bin/agensi status  atau  bin/agensi logs" >&2
+  exit 1
+}
+
+stop() {
+  if ! docker info >/dev/null 2>&1; then
+    echo "Docker tidak berjalan; Agensi Sebelah sudah mati."
+    return
+  fi
+  echo "Mematikan Agensi Sebelah (data database tetap tersimpan)..."
+  # `stop`, bukan `down -v`: volume database tidak pernah dihapus.
+  docker compose stop
+  echo "Selesai. Nyalakan lagi dengan: bin/agensi start"
+}
+
+status() {
+  if ! docker info >/dev/null 2>&1; then
+    echo "Docker tidak berjalan."
+    return
+  fi
+  docker compose ps --format 'table {{.Service}}\t{{.Status}}'
+  echo
+  echo "Dashboard: $URL"
+}
+
+case "${1:-}" in
+  start) start ;;
+  stop) stop ;;
+  restart) stop; start ;;
+  status) status ;;
+  logs) docker compose logs -f --tail 50 worker scheduler telegram-poller ;;
+  *)
+    echo "Pakai: bin/agensi {start|stop|restart|status|logs}" >&2
+    exit 1
+    ;;
+esac

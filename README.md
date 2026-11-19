@@ -3,7 +3,17 @@
 Agensi digital marketing berbasis AI yang hemat token: workflow deterministik, peran AI yang dipanggil saat dibutuhkan,
 artefak JSON berversi, dan manusia sebagai gerbang persetujuan. Lihat [`docs/PRD.md`](docs/PRD.md).
 
-## Menjalankan lokal
+## Menyalakan & mematikan
+
+```bash
+bin/agensi start     # nyalakan semua service, lalu buka dashboard di browser
+bin/agensi stop      # matikan (data tetap aman)
+bin/agensi status    # lihat service yang berjalan
+bin/agensi restart
+bin/agensi logs      # log worker, scheduler, bot Telegram (Ctrl+C keluar)
+```
+
+## Menjalankan lokal (pertama kali)
 
 Butuh Docker Desktop. PHP dan Composer tidak perlu dipasang di host.
 

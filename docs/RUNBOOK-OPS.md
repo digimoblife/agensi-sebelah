@@ -5,6 +5,8 @@ Status: Minggu 6 · 19 Nov 2026
 ## Menyalakan / mematikan
 
 ```
+bin/agensi start            # cara singkat: nyalakan Docker bila perlu, semua service, buka dashboard
+bin/agensi stop             # matikan (data tetap aman)
 docker compose up -d        # semua service (app, worker, scheduler, telegram-poller, postgres, redis, gotenberg, nginx)
 docker compose ps           # semua "Up"
 docker compose exec app php artisan pilot:check
