@@ -17,6 +17,7 @@ use App\Roles\Validators\WeeklyReportValidator;
 
 return [
     'brand_strategist' => [
+        'why' => 'Menentukan arah brand; jarang dipanggil (onboarding, per kuartal), kualitas penalaran paling penting.',
         'label' => 'Brand Strategist',
         'tier' => 't3',
         'prompt' => 'brand_strategist',
@@ -31,6 +32,7 @@ return [
         'allow_downgrade' => false,
     ],
     'art_director' => [
+        'why' => 'Menetapkan aturan visual sekali per klien; butuh selera dan konsistensi.',
         'label' => 'Art Director',
         'tier' => 't3',
         'prompt' => 'art_director',
@@ -45,6 +47,7 @@ return [
         'allow_downgrade' => false,
     ],
     'researcher' => [
+        'why' => 'Merangkum bahan riset; teks panjang tapi tidak butuh penalaran premium.',
         'label' => 'Researcher',
         'tier' => 't2',
         'prompt' => 'researcher',
@@ -60,6 +63,7 @@ return [
         'allow_downgrade' => true,
     ],
     'content_strategist' => [
+        'why' => 'Menyusun rencana bulanan dari Brand Brief; struktur rapi, sebulan sekali.',
         'label' => 'Content Strategist',
         'tier' => 't2',
         'prompt' => 'content_strategist',
@@ -75,6 +79,7 @@ return [
         'allow_downgrade' => true,
     ],
     'copywriter' => [
+        'why' => 'Menulis banyak caption sekaligus setiap minggu; volume tinggi, biaya paling terasa.',
         'label' => 'Copywriter',
         'tier' => 't2',
         'prompt' => 'copywriter',
@@ -90,6 +95,7 @@ return [
         'allow_downgrade' => true,
     ],
     'brand_guardian' => [
+        'why' => 'Memeriksa draf (tone, klaim, typo); tugas pendek dan sering, cukup model murah.',
         'label' => 'Brand Guardian',
         'tier' => 't1',
         'prompt' => 'brand_guardian',
@@ -105,6 +111,7 @@ return [
         'allow_downgrade' => true,
     ],
     'report_writer' => [
+        'why' => 'Menulis komentar laporan dari angka yang sudah dihitung; singkat, mingguan.',
         'label' => 'Report Writer',
         'tier' => 't2',
         'prompt' => 'report_writer',

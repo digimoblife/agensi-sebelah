@@ -12,6 +12,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -40,7 +41,16 @@ class RoleConfigResource extends Resource
             ->get()->mapWithKeys(fn (ModelCatalogEntry $m) => [$m->id => $m->provider->label().' · '.$m->label]);
 
         return $schema->components([
-            Select::make('role_key')->label('Peran')->required()->options(app(RoleRegistry::class)->options())
+            Select::make('role_key')->label('Peran')->required()->options(app(RoleRegistry::class)->options())->live()
+                ->helperText(function (Get $get) {
+                    $key = $get('role_key');
+                    if (! is_string($key) || $key === '') {
+                        return 'Pilih peran untuk melihat kelas model yang disarankan.';
+                    }
+                    $role = app(RoleRegistry::class)->get($key);
+
+                    return "Disarankan: model {$role->tier->modelClass()} ({$role->tier->examples()}). {$role->why}";
+                })
                 ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule) => $rule->where('workspace_id', Workspace::current()->id)),
             Select::make('primary_model_id')->label('Model utama')->options($models)->required(),
             Select::make('fallback_model_id')->label('Model cadangan')->options($models)->different('primary_model_id'),
@@ -55,6 +65,9 @@ class RoleConfigResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('role_key')->label('Peran')->formatStateUsing(fn (string $state) => $roles[$state] ?? $state),
+                TextColumn::make('tier')->label('Kelas disarankan')->badge()
+                    ->state(fn (RoleConfig $r) => app(RoleRegistry::class)->get($r->role_key)->tier->modelClass())
+                    ->color(fn (RoleConfig $r) => app(RoleRegistry::class)->get($r->role_key)->tier->color()),
                 TextColumn::make('primaryModel.label')->label('Utama'),
                 TextColumn::make('fallbackModel.label')->label('Cadangan')->placeholder('—'),
                 TextColumn::make('max_cost_per_call_usd')->label('Batas/panggilan')->money('USD')->placeholder('—'),

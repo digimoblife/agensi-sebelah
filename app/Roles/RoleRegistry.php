@@ -30,6 +30,7 @@ class RoleRegistry
             expectedOutputTokens: (int) $config['expected_output_tokens'],
             allowDowngrade: (bool) $config['allow_downgrade'],
             validator: $this->validator($config['validator'] ?? null),
+            why: (string) ($config['why'] ?? ''),
         );
     }
 

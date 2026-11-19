@@ -41,3 +41,7 @@ it('renders the client edit page with its relation tabs', function () {
 it('lists the seeded Claude models as ready to route', function () {
     Livewire::test(ManageModelCatalog::class)->assertSee(['Claude Opus 5.5', 'Claude Haiku 5.5']);
 });
+
+it('explains the model class per role and that image/video generation is not an MVP role', function () {
+    Livewire::test(ManageRoleConfigs::class)->assertSee(['Brand Strategist', 'High-end', 'Brand Guardian', 'Murah', 'Gambar dan video']);
+});

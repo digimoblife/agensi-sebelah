@@ -26,5 +26,6 @@ final readonly class RoleDefinition
         public bool $allowDowngrade,
         /** @var class-string<OutputValidator>|null */
         public ?string $validator = null,
+        public string $why = '',
     ) {}
 }
