@@ -2,6 +2,7 @@
 
 use App\Filament\Pages\ContentCalendar;
 use App\Filament\Pages\Credentials;
+use App\Filament\Pages\PilotReadinessPage;
 use App\Filament\Resources\Clients\Pages\EditClient;
 use App\Filament\Resources\Clients\Pages\ListClients;
 use App\Filament\Resources\ContentItems\Pages\ListContentItems;
@@ -26,7 +27,7 @@ it('renders every dashboard page', function (string $page) {
     Livewire::test($page)->assertSuccessful();
 })->with([
     Credentials::class, ListClients::class, ManageModelCatalog::class, ManageRoleConfigs::class,
-    ListLlmCalls::class, ListJobRuns::class, ListContentItems::class, ContentCalendar::class, ManageMoments::class, ListPublishJobs::class, ListReports::class,
+    ListLlmCalls::class, ListJobRuns::class, ListContentItems::class, ContentCalendar::class, ManageMoments::class, ListPublishJobs::class, ListReports::class, PilotReadinessPage::class,
 ]);
 
 it('renders the client edit page with its relation tabs', function () {

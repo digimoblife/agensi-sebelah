@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Enums\CredentialProvider;
 use App\Services\Credentials\CredentialStore;
+use App\Services\Ops\Heartbeat;
 use App\Services\Telegram\TelegramClient;
 use App\Services\Telegram\UpdateHandler;
 use Illuminate\Console\Command;
@@ -20,6 +21,7 @@ class TelegramPoll extends Command
     public function handle(TelegramClient $telegram, UpdateHandler $handler, CredentialStore $credentials): int
     {
         do {
+            app(Heartbeat::class)->beat('telegram_poller');
             if (! $credentials->isComplete(CredentialProvider::Telegram)) {
                 $this->components->warn('Telegram bot token is not configured; waiting.');
                 if ($this->option('once')) {

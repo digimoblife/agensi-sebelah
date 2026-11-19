@@ -1,6 +1,6 @@
 FROM php:8.3-fpm-alpine AS base
 
-RUN apk add --no-cache bash curl git unzip icu-dev libjpeg-turbo-dev libpng-dev libzip-dev freetype-dev \
+RUN apk add --no-cache bash curl git unzip postgresql17-client icu-dev libjpeg-turbo-dev libpng-dev libzip-dev freetype-dev \
         postgresql-dev oniguruma-dev linux-headers $PHPIZE_DEPS \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) bcmath exif gd intl opcache pcntl pdo pdo_pgsql pgsql posix zip \

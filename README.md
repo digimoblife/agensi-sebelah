@@ -18,6 +18,15 @@ docker compose exec app php artisan make:filament-user
 
 Dashboard: http://localhost:8088/admin · Horizon: http://localhost:8088/horizon
 
+## Pilot
+
+```bash
+docker compose exec app php artisan pilot:check
+docker compose exec app php artisan demo:seed --with-artifacts   # klien demo fiktif untuk uji kering
+```
+
+Lihat [checklist pilot](docs/PILOT-CHECKLIST.md), [runbook publish](docs/RUNBOOK-PUBLISH.md), [runbook operasional](docs/RUNBOOK-OPS.md).
+
 ## Test & kualitas
 
 ```bash

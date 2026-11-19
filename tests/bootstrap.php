@@ -36,6 +36,7 @@ foreach ([
     'PUBLISHER' => 'fake',
     'RENDERER' => 'fake',
     'PUBLIC_MEDIA_BASE_URL' => '',
+    'BACKUP_DIR' => sys_get_temp_dir().'/agensi-test-backups',
     'ANTHROPIC_API_KEY' => '',
     'ANTHROPIC_AUTH_TOKEN' => '',
     'ANTHROPIC_BASE_URL' => '',

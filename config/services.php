@@ -60,4 +60,10 @@ return [
         'media_url_ttl_minutes' => 120,
     ],
 
+    // F9.9: pg_dump, encrypted with a key derived from APP_KEY (keep APP_KEY in a password manager).
+    'backup' => [
+        'dir' => env('BACKUP_DIR', storage_path('app/private/backups')),
+        'keep_days' => (int) env('BACKUP_KEEP_DAYS', 14),
+    ],
+
 ];
