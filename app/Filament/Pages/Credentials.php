@@ -58,6 +58,9 @@ class Credentials extends Page
             }
 
             $fields = [];
+            if ($note = $this->scopeNote($provider)) {
+                $fields[] = Text::make($note)->color('gray');
+            }
             foreach ($store->fields($provider) as $key => $field) {
                 $current = $store->display($provider, $key);
                 $input = TextInput::make("data.{$provider->value}.{$key}")
@@ -179,6 +182,16 @@ class Credentials extends Page
             CredentialProvider::Meta => app(MetaTester::class)->test($values),
             CredentialProvider::GoogleOauth => app(GoogleOauthTester::class)->test($values),
             default => ConnectionResult::failed('not_supported', 'Tes koneksi belum tersedia untuk penyedia ini.'),
+        };
+    }
+
+    /** Meta and Google hold the agency's own app, used for every client; client accounts connect per client. */
+    private function scopeNote(CredentialProvider $provider): ?string
+    {
+        return match ($provider) {
+            CredentialProvider::Meta => 'Diisi sekali untuk agensi: satu Meta App untuk semua klien. Akun Instagram tiap klien dihubungkan di Klien → Koneksi akun. Sebelum App Review lolos, tambahkan akun klien sebagai tester di Meta Developer → App roles.',
+            CredentialProvider::GoogleOauth => 'Diisi sekali untuk agensi: satu OAuth client untuk semua klien. Google Analytics tiap klien dihubungkan di Klien → Koneksi akun.',
+            default => null,
         };
     }
 

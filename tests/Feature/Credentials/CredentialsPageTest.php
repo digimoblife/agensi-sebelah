@@ -44,3 +44,7 @@ it('tests an AI provider connection through its adapter and records the result',
 
     expect(app(CredentialStore::class)->status(CredentialProvider::OpenAi)->status)->toBe(CredentialStatus::Ok);
 });
+
+it('explains that Meta and Google are the agency app, connected per client elsewhere', function () {
+    Livewire::test(Credentials::class)->assertSee(['Diisi sekali untuk agensi: satu Meta App untuk semua klien', 'Klien → Koneksi akun']);
+});
