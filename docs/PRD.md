@@ -172,8 +172,8 @@ Sistem tidak berasumsi klien menjual produk fisik: setiap klien diberi profil je
 
 | Jenis penawaran | Contoh | Konversi utama | Aset visual utama |
 | --- | --- | --- | --- |
-| Tiket / event / workshop | Kriyanesa | Booking tiket | Foto & video sesi, proses tangan berkarya, hasil karya peserta, tempat, instruktur, testimoni |
-| Aplikasi / produk digital | Cerita Tumbuh | Install / daftar | Screenshot & rekaman layar, mockup perangkat, ilustrasi/karakter brand, cerita pengguna |
+| Tiket / event / workshop | Workshop kerajinan, kelas, konser | Booking tiket | Foto & video sesi, proses tangan berkarya, hasil karya peserta, tempat, instruktur, testimoni |
+| Aplikasi / produk digital | Aplikasi parenting, SaaS | Install / daftar | Screenshot & rekaman layar, mockup perangkat, ilustrasi/karakter brand, cerita pengguna |
 | Jasa / layanan | Konsultan, studio, klinik | Lead / konsultasi | Foto tim & proses kerja, studi kasus, before–after, testimoni |
 | Produk fisik | Toko online | Pembelian | Foto produk, foto lifestyle, ulasan pembeli |
 | Konten / komunitas | Kelas online, media | Subscribe / join | Cuplikan materi, wajah kreator, kutipan, highlight komunitas |
@@ -188,9 +188,9 @@ Data penawaran memakai entitas generik "Offering" (nama, jenis, harga opsional, 
 4. Ilustrasi dan latar AI untuk suasana dan konsep. AI tidak dipakai untuk memalsukan hal nyata, misalnya hasil karya peserta, tempat, atau fitur aplikasi yang tidak ada.
 5. Foto stok berlisensi sebagai pelengkap.
 
-Foto anak (relevan untuk Cerita Tumbuh) hanya dari stok berlisensi, ilustrasi, atau dengan izin orang tua.
+Foto anak (relevan untuk klien kategori anak/parenting) hanya dari stok berlisensi, ilustrasi, atau dengan izin orang tua.
 
-Pustaka aset menyimpan tag (offering, jenis, suasana, ada/tanpa orang), status izin dan lisensi, serta riwayat pemakaian. Aturan kepatuhan Brand Guardian mengikuti kategori klien, misalnya klaim tumbuh kembang anak untuk Cerita Tumbuh, atau kebijakan refund dan jadwal untuk tiket.
+Pustaka aset menyimpan tag (offering, jenis, suasana, ada/tanpa orang), status izin dan lisensi, serta riwayat pemakaian. Aturan kepatuhan Brand Guardian mengikuti kategori klien, misalnya klaim tumbuh kembang anak untuk aplikasi parenting, atau kebijakan refund dan jadwal untuk tiket.
 
 ## Tambahan fungsional v1.1
 
@@ -329,11 +329,11 @@ Syarat untuk mulai mengevaluasi SaaS: minimal 10 klien berjalan stabil dengan bi
 
 ## Roadmap
 
-MVP sekitar 6 minggu dengan Kriyanesa sebagai klien pertama (dogfooding), lalu fase 2 dan 3 masing-masing sekitar 2 bulan; setiap fase punya gerbang sebelum lanjut.
+MVP sekitar 6 minggu dan diuji dengan satu klien pilot (dogfooding); produk tetap generik, klien pilot tidak menjadi acuan desain, lalu fase 2 dan 3 masing-masing sekitar 2 bulan; setiap fase punya gerbang sebelum lanjut.
 
 | Fase | Durasi | Cakupan | Gerbang lanjut |
 | --- | --- | --- | --- |
-| MVP | \~6 minggu | Onboarding + Brand Brief, Researcher, Content Strategist, Copywriter, Graphic Designer (template), Brand Guardian, approval Telegram, auto-publish IG + paket siap upload, profil jenis bisnis, knowledge base & pustaka aset, konsol job, kalender momen, Data Analyst + Report Writer, LLM Gateway + dashboard biaya | Kriyanesa berjalan 4 minggu; biaya token per bulan terukur; ≥ 80% konten disetujui tanpa revisi besar |
+| MVP | \~6 minggu | Onboarding + Brand Brief, Researcher, Content Strategist, Copywriter, Graphic Designer (template), Brand Guardian, approval Telegram, auto-publish IG + paket siap upload, profil jenis bisnis, knowledge base & pustaka aset, konsol job, kalender momen, Data Analyst + Report Writer, LLM Gateway + dashboard biaya | Klien pilot berjalan 4 minggu; biaya token per bulan terukur; ≥ 80% konten disetujui tanpa revisi besar |
 | Fase 2 | \~2 bulan | Website Auditor, SEO Specialist + SEO Writer, Analytics Engineer (tracking plan, first-party tracker, CAPI), Scriptwriter, TikTok + FB, Community Manager, Art Director penuh, WhatsApp, repurposing, evaluasi prompt, kepatuhan per kategori, relay VPS | 3–5 klien berjalan; audit menghasilkan perbaikan yang terukur |
 | Fase 3 | \~2 bulan | Campaign Planner, Ads Specialist, CRO + A/B test, atribusi, KOL Specialist, perintah admin via Telegram (ditahan), portal klien sederhana, evaluasi kesiapan SaaS | 10+ klien; biaya AI per klien stabil dan terprediksi |
 
@@ -344,7 +344,7 @@ MVP sekitar 6 minggu dengan Kriyanesa sebagai klien pertama (dogfooding), lalu f
 3. Minggu 3: Content Plan + batch copy + Brand Guardian.
 4. Minggu 4: render template + approval Telegram.
 5. Minggu 5: auto-publish IG / paket siap upload + KPI Snapshot + laporan mingguan.
-6. Minggu 6: uji penuh di Kriyanesa, perbandingan biaya dengan setup Paperclip.
+6. Minggu 6: uji penuh dengan klien pilot, perbandingan biaya dengan setup Paperclip.
 
 ## KPI, risiko, dan pertanyaan terbuka
 

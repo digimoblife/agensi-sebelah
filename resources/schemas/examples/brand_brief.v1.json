@@ -1,7 +1,7 @@
 {
   "meta": { "artifact_type": "brand_brief", "schema_version": 1, "client_id": 1, "version": 1, "language": "id", "source_refs": ["kb:1", "kb:2", "research_pack@1"] },
   "business": {
-    "name": "Studio Kriya Contoh",
+    "name": "Studio Contoh",
     "one_liner": "Workshop kerajinan tangan akhir pekan untuk orang kota yang ingin rehat dari layar.",
     "category": "Workshop kreatif",
     "offering_types": ["event_ticket"],

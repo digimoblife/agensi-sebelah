@@ -1,1 +1,1 @@
-Contoh fiktif untuk validasi schema dan fixture test. Bukan data klien nyata; jangan diganti dengan data Kriyanesa asli (data klien asli tidak masuk repo).
+Contoh fiktif untuk validasi schema dan fixture test. Bukan data klien nyata dan bukan acuan produk; data klien asli dimasukkan lewat dashboard dan tidak masuk repo.

@@ -18,7 +18,7 @@ PRD sudah kuat di sisi **produk** (masalah, prinsip hemat token, 27 peran, artef
 | 2 | Workflow engine: buat sendiri / n8n / Temporal | **Buat sendiri**: state machine di Postgres + antrian job. n8n tidak cocok untuk artefak berversi dan validasi schema; Temporal terlalu berat untuk satu MacBook. Pertimbangkan antrian berbasis Postgres (pg-boss / Graphile Worker / Oban / Laravel queue sesuai stack) supaya Redis tidak wajib. |
 | 3 | Cara klien membuka "tautan approval/laporan" | Lihat kontradiksi K1 di bawah. MVP: approval klien **hanya via Telegram** + laporan dikirim sebagai PDF di Telegram. |
 | 4 | Satuan budget guard | Pakai **mata uang (USD/IDR)**, bukan token, karena harga berbeda per penyedia dan ada biaya gambar/video. Token tetap dicatat. |
-| 5 | Pemetaan model default & batas biaya media | Isi angka awal (misal media $X/klien/bulan) agar budget guard bisa diuji di Kriyanesa. |
+| 5 | Pemetaan model default & batas biaya media | Isi angka awal (misal media $X/klien/bulan) agar budget guard bisa diuji dengan klien pilot pertama. |
 
 ---
 
@@ -61,7 +61,7 @@ Urut prioritas. **P0** = dibutuhkan sebelum/di Minggu 1, **P1** = selama MVP, **
 | P1 | `prompts/<role>/v1.md` + `docs/PROMPTING.md` | Konvensi prompt berversi, struktur (system, brand brief, KB, task, schema), aturan anti-mengarang (fakta hanya dari KB). | Prinsip 4–6, F9.2 |
 | P1 | `templates/visual/<brand>/` + `docs/VISUAL-TEMPLATES.md` | Ukuran per format (feed 1080×1350, story 1080×1920, carousel), slot teks, aturan overflow, cara render Playwright. | F3.2 |
 | P1 | `lang/id/*` (pesan bot) | Template pesan Telegram: approval, pengingat upload, alert budget, job gagal, laporan mingguan. | F4.1, F9.5 |
-| P1 | `docs/clients/kriyanesa/` | Data dogfooding: input onboarding, KB, offering, aset awal, KPI goal. Juga baseline biaya setup Paperclip untuk perbandingan Minggu 6. | Roadmap |
+| P1 | Seeder data demo fiktif | Klien demo per jenis penawaran (event, aplikasi, jasa, produk fisik, komunitas) agar fitur diuji secara generik. Data klien nyata dimasukkan lewat dashboard, tidak masuk repo. | Jenis bisnis |
 | P2 | `evals/<role>/` + `docs/EVALS.md` | Dataset contoh per peran, metrik, cara menjalankan. Mulai kumpulkan contoh sejak MVP dari hasil approval/revisi. | F9.13 |
 | P2 | `docs/COMPLIANCE.md` | Aturan per kategori (klaim tumbuh kembang anak, refund tiket), label konten AI Meta/TikTok, larangan wajah orang nyata, foto anak. | Pustaka aset, F9.14 |
 | P2 | `docs/RUNBOOK.md` | Menyalakan/mematikan stack, restore backup, rotasi API key, menangani publish gagal. | Keandalan |
