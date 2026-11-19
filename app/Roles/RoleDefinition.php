@@ -24,5 +24,7 @@ final readonly class RoleDefinition
         public int $maxOutputTokens,
         public int $expectedOutputTokens,
         public bool $allowDowngrade,
+        /** @var class-string<OutputValidator>|null */
+        public ?string $validator = null,
     ) {}
 }

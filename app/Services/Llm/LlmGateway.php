@@ -9,6 +9,7 @@ use App\Models\Client;
 use App\Models\LlmCall;
 use App\Models\ModelCatalogEntry;
 use App\Models\RoleConfig;
+use App\Roles\OutputValidator;
 use App\Roles\RoleDefinition;
 use App\Roles\RoleRegistry;
 use App\Services\Budget\BudgetService;
@@ -205,6 +206,11 @@ class LlmGateway
         }
 
         $errors = $this->schemas->errors($role->outputSchema, $candidate);
+        if ($errors === [] && $role->validator !== null) {
+            /** @var OutputValidator $validator */
+            $validator = app($role->validator);
+            $errors = $validator->errors($payload, $request);
+        }
 
         // Semantic rule: every kb:<id> the model cites must be a fact it was given (no invented facts).
         $allowed = array_map(fn (array $f) => 'kb:'.$f['id'], $request->facts);

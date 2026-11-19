@@ -20,8 +20,8 @@ class BudgetService
             ['client_id' => $client->id, 'month' => $month],
             [
                 'workspace_id' => $client->workspace_id,
-                'llm_limit_usd' => config('llm.budget.default_llm_limit_usd'),
-                'media_limit_usd' => config('llm.budget.default_media_limit_usd'),
+                'llm_limit_usd' => $client->llm_budget_usd ?? config('llm.budget.default_llm_limit_usd'),
+                'media_limit_usd' => $client->media_budget_usd ?? config('llm.budget.default_media_limit_usd'),
             ],
         );
     }

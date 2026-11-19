@@ -32,6 +32,8 @@ class AdminPanelProvider extends PanelProvider
             // F9.9: admin login requires an authenticator app (TOTP) with recovery codes.
             ->multiFactorAuthentication([AppAuthentication::make()->recoverable()], isRequired: true)
             ->brandName('Agensi Sebelah')
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('15s')
             ->colors([
                 'primary' => Color::Amber,
             ])

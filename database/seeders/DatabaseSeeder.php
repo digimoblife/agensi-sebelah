@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             WorkspaceSeeder::class,
             ModelCatalogSeeder::class,
+            OfferingTypeSeeder::class,
         ]);
     }
 }

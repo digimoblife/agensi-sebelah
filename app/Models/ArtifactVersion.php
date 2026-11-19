@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property array<string, mixed> $payload
  * @property ArtifactStatus $status
+ * @property-read Artifact $artifact
  */
 class ArtifactVersion extends Model
 {

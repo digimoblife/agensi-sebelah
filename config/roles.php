@@ -1,5 +1,8 @@
 <?php
 
+use App\Roles\Validators\ContentBatchValidator;
+use App\Roles\Validators\ResearchPackValidator;
+
 /*
 | AI role registry (PRD §Struktur tim AI). A role is a prompt + output schema, not a running agent.
 | Model choice per role lives in role_configs (dashboard); these are the fixed parts.
@@ -44,6 +47,7 @@ return [
         'prompt' => 'researcher',
         'prompt_version' => 1,
         'output_schema' => 'research_pack.v1',
+        'validator' => ResearchPackValidator::class,
         'artifact_inputs' => ['brand_brief'],
         'uses_facts' => true,
         'capabilities' => ['text'],
@@ -72,6 +76,7 @@ return [
         'prompt' => 'copywriter',
         'prompt_version' => 1,
         'output_schema' => 'content_batch.v1',
+        'validator' => ContentBatchValidator::class,
         'artifact_inputs' => ['brand_brief', 'visual_rules'],
         'uses_facts' => true,
         'capabilities' => ['text'],

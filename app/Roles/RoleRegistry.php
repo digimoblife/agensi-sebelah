@@ -29,7 +29,21 @@ class RoleRegistry
             maxOutputTokens: (int) $config['max_output_tokens'],
             expectedOutputTokens: (int) $config['expected_output_tokens'],
             allowDowngrade: (bool) $config['allow_downgrade'],
+            validator: $this->validator($config['validator'] ?? null),
         );
+    }
+
+    /** @return class-string<OutputValidator>|null */
+    private function validator(mixed $class): ?string
+    {
+        if ($class === null) {
+            return null;
+        }
+        if (! is_string($class) || ! is_subclass_of($class, OutputValidator::class)) {
+            throw new InvalidArgumentException('Role validator must implement '.OutputValidator::class.'.');
+        }
+
+        return $class;
     }
 
     /** @return array<string, string> key => label */

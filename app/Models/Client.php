@@ -8,7 +8,14 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property ClientStatus $status
+ * @property ?array<string, mixed> $onboarding
+ * @property ?string $llm_budget_usd
+ * @property ?string $media_budget_usd
+ */
 class Client extends Model
 {
     /** @use HasFactory<ClientFactory> */
@@ -16,11 +23,11 @@ class Client extends Model
 
     use HasUlids;
 
-    protected $fillable = ['workspace_id', 'name', 'slug', 'status', 'timezone'];
+    protected $fillable = ['workspace_id', 'name', 'slug', 'status', 'timezone', 'primary_offering_type', 'onboarding', 'llm_budget_usd', 'media_budget_usd'];
 
     protected function casts(): array
     {
-        return ['status' => ClientStatus::class];
+        return ['status' => ClientStatus::class, 'onboarding' => 'array'];
     }
 
     /** @return list<string> */
@@ -33,5 +40,47 @@ class Client extends Model
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);
+    }
+
+    /** @return BelongsTo<OfferingType, $this> */
+    public function offeringType(): BelongsTo
+    {
+        return $this->belongsTo(OfferingType::class, 'primary_offering_type', 'key');
+    }
+
+    /** @return HasMany<Offering, $this> */
+    public function offerings(): HasMany
+    {
+        return $this->hasMany(Offering::class);
+    }
+
+    /** @return HasMany<KnowledgeItem, $this> */
+    public function knowledgeItems(): HasMany
+    {
+        return $this->hasMany(KnowledgeItem::class);
+    }
+
+    /** @return HasMany<KpiGoal, $this> */
+    public function kpiGoals(): HasMany
+    {
+        return $this->hasMany(KpiGoal::class);
+    }
+
+    /** @return HasMany<ResearchInput, $this> */
+    public function researchInputs(): HasMany
+    {
+        return $this->hasMany(ResearchInput::class);
+    }
+
+    /** @return HasMany<Artifact, $this> */
+    public function artifacts(): HasMany
+    {
+        return $this->hasMany(Artifact::class);
+    }
+
+    /** @return HasMany<ArtifactVersion, $this> */
+    public function artifactVersions(): HasMany
+    {
+        return $this->hasMany(ArtifactVersion::class);
     }
 }

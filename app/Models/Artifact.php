@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property ArtifactType $type
+ * @property ?string $scope_ref
+ */
 class Artifact extends Model
 {
     protected $fillable = ['workspace_id', 'client_id', 'type', 'scope_ref', 'current_version_id'];

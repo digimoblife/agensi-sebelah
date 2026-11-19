@@ -24,3 +24,17 @@ Setiap entri menyebut ID fitur PRD atau kode celah (K1–K10) terkait.
 - **MFA wajib** untuk admin (Filament app authentication + recovery codes). Setelah login pertama, admin diminta memasang aplikasi authenticator.
 - **Katalog model**: hanya model Claude yang di-seed dengan harga (sumber: daftar harga Anthropic, Nov 2026). Model OpenAI, Gemini, dan DeepSeek ditambah admin di dashboard beserta harganya; model tanpa harga tidak pernah dipakai gateway.
 - **Workspace**: helper/seed memakai "workspace pertama", bukan `firstOrCreate(['id' => 1])` (kolom `id` tidak fillable sehingga cara itu membuat workspace baru setiap kali).
+
+## Minggu 2 — Onboarding, knowledge base, Brand Brief, Research Pack (19 Nov 2026)
+
+- **Jawaban onboarding** (F1.1) disimpan di `clients.onboarding` (jsonb), termasuk checklist akses akun per kanal. Checklist akses tidak pernah dikirim ke AI. Fakta yang boleh dipakai AI tetap hanya dari knowledge base.
+- **Profil jenis penawaran** (F9.1) di tabel global `offering_types` (5 profil dari PRD) berisi event konversi, KPI, pilar, CTA, aset, dan catatan kepatuhan. Profil dikirim ke Brand Strategist sebagai masukan, tidak memaksa isi brief.
+- **Knowledge base**: mengedit item mencabut persetujuannya, jadi fakta yang berubah harus disetujui ulang. Item kedaluwarsa (`valid_until` lewat) otomatis tidak dikirim.
+- **Prasyarat generator**: Brand Brief butuh deskripsi bisnis + minimal satu fakta disetujui; Visual Rules butuh Brand Brief disetujui; Research Pack butuh minimal satu bahan riset. Pesan prasyarat tampil ke admin sebagai notifikasi.
+- **Research Pack**: bahan riset dikumpulkan manual dari sumber publik (K7). Backend menimpa `sources`, `period`, dan `keywords[].volume` (hanya dari input SERP admin); model hanya merangkum. Validator peran menolak `source_ids` yang tidak diberikan.
+- **Visual Rules**: `logo.asset_id` selalu `pending` sampai pustaka aset ada (Minggu 4); model tidak memilih aset.
+- **Validator per peran** (`App\Roles\OutputValidator`, didaftarkan di `config/roles.php`) berjalan setelah validasi schema: Research Pack (sumber), Content Batch (tepat satu item per `plan_item_key`).
+- **Job**: `GenerateArtifact` di antrian `llm`, `tries = 1` (retry/fallback sudah di gateway), dicatat di `job_runs` dengan kunci `generate_artifact:<client>:<type>` sehingga klik ganda tidak menggandakan biaya. Hasil dikirim sebagai notifikasi dashboard. Konsol job (F9.6) bisa menjalankan ulang job gagal.
+- **Edit artefak oleh admin** = versi baru yang divalidasi schema; versi lama tidak diubah.
+- **Budget per klien** bisa diisi di profil klien; kosong = default `config/llm.php`.
+- Koneksi OAuth akun klien (F1.2) belum dibuat; checklist akses akun dipakai dulu. OAuth dikerjakan bersama publish IG (Minggu 5) dan analitik.
