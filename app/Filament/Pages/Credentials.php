@@ -121,6 +121,8 @@ class Credentials extends Page
         Notification::make()
             ->title($changed === [] ? 'Tidak ada perubahan.' : 'Kredensial disimpan. Jalankan tes koneksi.')
             ->success()->send();
+
+        $this->reload();
     }
 
     public function testProvider(CredentialProvider $provider): void
@@ -130,6 +132,8 @@ class Credentials extends Page
         $store->recordTest($provider, $result);
 
         Notification::make()->title($result->message)->{$result->ok ? 'success' : 'danger'}()->send();
+
+        $this->reload();
     }
 
     public function linkAdminTelegram(): void
@@ -150,6 +154,17 @@ class Credentials extends Page
     {
         app(CredentialStore::class)->forget($provider);
         Notification::make()->title('Kredensial dihapus.')->success()->send();
+
+        $this->reload();
+    }
+
+    /**
+     * Full page reload so every section is rebuilt from the database: masked values, status line and the
+     * "Tes koneksi" button state. The notification survives the redirect (session flash).
+     */
+    private function reload(): void
+    {
+        $this->redirect(static::getUrl());
     }
 
     /** @param  array<string, string>  $values */

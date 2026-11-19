@@ -13,14 +13,19 @@ beforeEach(fn () => $this->actingAs(admin()));
 it('saves a credential without echoing it back to the page', function () {
     $key = FakeSecrets::apiKey(LlmProvider::Anthropic, 'PAGE');
 
-    $page = Livewire::test(Credentials::class)
+    Livewire::test(Credentials::class)
         ->set('data.anthropic.api_key', $key)
         ->call('saveProvider', CredentialProvider::Anthropic)
-        ->assertHasNoErrors();
+        ->assertHasNoErrors()
+        ->assertRedirect(Credentials::getUrl());
 
+    // After the reload the section shows the masked value and the test button is enabled.
+    $page = Livewire::test(Credentials::class);
     expect(app(CredentialStore::class)->get(CredentialProvider::Anthropic, 'api_key'))->toBe($key)
-        ->and($page->get('data.anthropic'))->toBe([])
-        ->and($page->html())->not->toContain($key)->toContain('••••••••PAGE');
+        ->and($page->get('data.anthropic'))->toBeNull()
+        ->and($page->html())->not->toContain($key)->toContain('••••••••PAGE')
+        // "Belum dites" is shown only when the provider is complete, i.e. when "Tes koneksi" is enabled.
+        ->toContain('Belum dites');
 });
 
 it('shows validation errors for malformed values and stores nothing', function () {
@@ -35,7 +40,7 @@ it('shows validation errors for malformed values and stores nothing', function (
 it('tests an AI provider connection through its adapter and records the result', function () {
     app(CredentialStore::class)->save(CredentialProvider::OpenAi, ['api_key' => FakeSecrets::apiKey(LlmProvider::OpenAi)]);
 
-    Livewire::test(Credentials::class)->call('testProvider', CredentialProvider::OpenAi);
+    Livewire::test(Credentials::class)->call('testProvider', CredentialProvider::OpenAi)->assertRedirect(Credentials::getUrl());
 
     expect(app(CredentialStore::class)->status(CredentialProvider::OpenAi)->status)->toBe(CredentialStatus::Ok);
 });
