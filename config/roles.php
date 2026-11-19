@@ -4,6 +4,7 @@ use App\Roles\Validators\ContentBatchValidator;
 use App\Roles\Validators\ContentPlanValidator;
 use App\Roles\Validators\GuardianReviewValidator;
 use App\Roles\Validators\ResearchPackValidator;
+use App\Roles\Validators\WeeklyReportValidator;
 
 /*
 | AI role registry (PRD §Struktur tim AI). A role is a prompt + output schema, not a running agent.
@@ -101,6 +102,21 @@ return [
         'effort' => 'low',
         'max_output_tokens' => 6000,
         'expected_output_tokens' => 1500,
+        'allow_downgrade' => true,
+    ],
+    'report_writer' => [
+        'label' => 'Report Writer',
+        'tier' => 't2',
+        'prompt' => 'report_writer',
+        'prompt_version' => 1,
+        'output_schema' => 'weekly_report.v1',
+        'validator' => WeeklyReportValidator::class,
+        'artifact_inputs' => ['brand_brief', 'kpi_snapshot'],
+        'uses_facts' => false,
+        'capabilities' => ['text'],
+        'effort' => 'low',
+        'max_output_tokens' => 3000,
+        'expected_output_tokens' => 800,
         'allow_downgrade' => true,
     ],
 ];

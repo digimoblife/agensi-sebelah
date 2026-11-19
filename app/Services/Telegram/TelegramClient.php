@@ -18,6 +18,8 @@ interface TelegramClient
      */
     public function sendPhotos(int $chatId, array $photos, ?string $caption = null): ?int;
 
+    public function sendDocument(int $chatId, string $name, string $contents, ?string $caption = null): ?int;
+
     public function answerCallback(string $callbackId, string $text): void;
 
     public function removeKeyboard(int $chatId, int $messageId): void;

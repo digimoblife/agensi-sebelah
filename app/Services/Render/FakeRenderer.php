@@ -18,4 +18,14 @@ final class FakeRenderer implements HtmlRenderer
 
         return (string) ob_get_clean();
     }
+
+    /** @var list<string> */
+    public array $pdfs = [];
+
+    public function pdf(string $html): string
+    {
+        $this->pdfs[] = $html;
+
+        return "%PDF-1.4\n% fake\n";
+    }
 }

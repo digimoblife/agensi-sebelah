@@ -95,4 +95,15 @@ class Client extends Model
     {
         return $this->hasMany(ClientContact::class);
     }
+
+    /** @return HasMany<OAuthConnection, $this> */
+    public function connections(): HasMany
+    {
+        return $this->hasMany(OAuthConnection::class);
+    }
+
+    public function connection(string $platform): ?OAuthConnection
+    {
+        return $this->connections()->where('platform', $platform)->first();
+    }
 }

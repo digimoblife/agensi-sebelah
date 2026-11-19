@@ -53,6 +53,14 @@ final class HttpTelegramClient implements TelegramClient
         return isset($result[0]['message_id']) ? (int) $result[0]['message_id'] : null;
     }
 
+    public function sendDocument(int $chatId, string $name, string $contents, ?string $caption = null): ?int
+    {
+        $result = $this->ok($this->http(60)->attach('document', $contents, $name)
+            ->post('sendDocument', array_filter(['chat_id' => $chatId, 'caption' => $caption])), 'sendDocument');
+
+        return isset($result['message_id']) ? (int) $result['message_id'] : null;
+    }
+
     public function answerCallback(string $callbackId, string $text): void
     {
         $this->http()->post('answerCallbackQuery', ['callback_query_id' => $callbackId, 'text' => $text]);

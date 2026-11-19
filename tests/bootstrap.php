@@ -35,6 +35,7 @@ foreach ([
     'TELEGRAM_CLIENT' => 'fake',
     'PUBLISHER' => 'fake',
     'RENDERER' => 'fake',
+    'PUBLIC_MEDIA_BASE_URL' => '',
     'ANTHROPIC_API_KEY' => '',
     'ANTHROPIC_AUTH_TOKEN' => '',
     'ANTHROPIC_BASE_URL' => '',

@@ -14,6 +14,8 @@ arch('rule 1: only LLM provider adapters may use the HTTP client')
         'App\Services\Llm\Providers',
         'App\Services\Telegram\HttpTelegramClient',
         'App\Services\Publish\Platforms',
+        'App\Services\Connections',
+        'App\Services\Publish\LinkChecker',
         'App\Services\Analytics\Sources',
         'App\Services\Render\GotenbergRenderer',
         'App\Services\Render\FontLibrary',

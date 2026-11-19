@@ -1,0 +1,8 @@
+{
+  "headline": "Booking naik, jangkauan Instagram stabil",
+  "summary": "Booking tiket minggu ini lebih tinggi dari minggu sebelumnya dan mendekati target. Jangkauan Instagram relatif stabil. Data GA4 untuk satu hari belum lengkap.",
+  "highlights": ["Booking tiket naik dibanding minggu lalu."],
+  "concerns": ["Data GA4 belum lengkap untuk satu hari."],
+  "next_steps": ["Tambah konten jadwal & booking menjelang akhir pekan."],
+  "metric_notes": [{ "metric_key": "ticket_booking", "note": "Mendekati target mingguan." }]
+}

@@ -9,4 +9,7 @@ interface HtmlRenderer
      * @return string PNG bytes
      */
     public function png(string $html, array $files, int $width, int $height): string;
+
+    /** @return string PDF bytes (A4) */
+    public function pdf(string $html): string;
 }

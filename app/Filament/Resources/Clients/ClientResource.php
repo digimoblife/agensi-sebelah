@@ -109,6 +109,7 @@ class ClientResource extends Resource
             RelationManagers\ResearchInputsRelationManager::class,
             RelationManagers\AssetsRelationManager::class,
             RelationManagers\ContactsRelationManager::class,
+            RelationManagers\ConnectionsRelationManager::class,
             RelationManagers\ArtifactVersionsRelationManager::class,
         ];
     }

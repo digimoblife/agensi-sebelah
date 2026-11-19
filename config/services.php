@@ -50,4 +50,14 @@ return [
         'invite_ttl_days' => 7,
     ],
 
+    // F4.2. Instagram fetches media by public URL; a local-first install needs a tunnel to expose /media only.
+    // Without it, every post becomes a ready-to-upload package (F9.5).
+    'publish' => [
+        'driver' => env('PUBLISHER', 'real'),
+        'public_media_base' => env('PUBLIC_MEDIA_BASE_URL'),
+        'default_time' => '19:00',
+        'late_after_minutes' => 30,
+        'media_url_ttl_minutes' => 120,
+    ],
+
 ];

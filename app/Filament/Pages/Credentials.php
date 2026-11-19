@@ -77,6 +77,10 @@ class Credentials extends Page
                 $fields[] = Text::make('Redirect URI: '.url('/oauth/google/callback'))->copyable();
             }
 
+            if ($provider === CredentialProvider::Meta) {
+                $fields[] = Text::make('Redirect URI (Facebook Login): '.url('/oauth/meta/callback'))->copyable();
+            }
+
             $sections[] = Section::make((string) $definition['label'])
                 ->description($this->statusLine($provider))
                 ->schema([

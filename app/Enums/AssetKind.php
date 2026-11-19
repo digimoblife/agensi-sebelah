@@ -12,4 +12,6 @@ enum AssetKind: string
     case Render = 'render';
     case AiImage = 'ai_image';
     case AiVideo = 'ai_video';
+    case Package = 'package';
+    case Report = 'report';
 }

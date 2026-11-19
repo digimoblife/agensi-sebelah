@@ -10,9 +10,12 @@ use App\Models\Client;
 use App\Models\ContentItem;
 use App\Models\User;
 use App\Services\Content\ContentReview;
+use App\Services\Publish\Publishing;
 use BackedEnum;
+use Carbon\CarbonImmutable;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ImageEntry;
@@ -141,6 +144,17 @@ class ContentItemResource extends Resource
                 ->action(function (ContentItem $r) {
                     dispatch(new RenderAndSend([$r->id]));
                     Notification::make()->title('Masuk antrian render & kirim.')->success()->send();
+                }),
+            Action::make('schedule')->label('Jadwalkan')->icon('heroicon-o-clock')->color('success')
+                ->visible(fn (ContentItem $r) => $r->status === ContentStatus::Rendered)
+                ->schema(fn (ContentItem $r) => [DateTimePicker::make('at')->label('Waktu terbit')->seconds(false)->timezone('Asia/Jakarta')->required()
+                    ->default(app(Publishing::class)->defaultTime($r))])
+                ->action(function (ContentItem $r, array $data) use ($actor) {
+                    $result = app(Publishing::class)->schedule($r, CarbonImmutable::parse((string) $data['at']), $actor());
+                    $notes = implode(' · ', array_column($result['issues'], 'note'));
+                    $result['job'] === null
+                        ? Notification::make()->title('Belum bisa dijadwalkan')->body($notes)->danger()->persistent()->send()
+                        : Notification::make()->title($result['job']->mode === 'api' ? 'Dijadwalkan, terbit otomatis.' : 'Dijadwalkan. Paket + pengingat dikirim saat jadwal tiba.')->body($notes ?: null)->success()->send();
                 }),
             Action::make('approve')->label('Setujui')->icon('heroicon-o-check')->color('success')
                 ->visible(fn (ContentItem $r) => $r->status === ContentStatus::AwaitingApproval)

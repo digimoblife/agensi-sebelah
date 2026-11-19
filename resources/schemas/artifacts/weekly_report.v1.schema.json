@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agensi-sebelah.local/schemas/weekly_report.v1.schema.json",
+  "title": "Weekly Report narrative (output LLM)",
+  "description": "Report Writer (T2) commentary on a KPI Snapshot. Numbers in the report table come from the snapshot, not from this text.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["headline", "summary", "highlights", "concerns", "next_steps", "metric_notes"],
+  "properties": {
+    "headline": { "type": "string", "minLength": 5, "maxLength": 120 },
+    "summary": { "type": "string", "minLength": 20, "maxLength": 700 },
+    "highlights": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 200 } },
+    "concerns": { "type": "array", "maxItems": 4, "items": { "type": "string", "maxLength": 200 } },
+    "next_steps": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 200 } },
+    "metric_notes": {
+      "type": "array", "maxItems": 10,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["metric_key", "note"],
+        "properties": {
+          "metric_key": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,50}$" },
+          "note": { "type": "string", "maxLength": 200 }
+        }
+      }
+    }
+  }
+}

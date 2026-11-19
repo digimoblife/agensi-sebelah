@@ -7,6 +7,9 @@ use App\Services\Artifacts\ArtifactApproved;
 use App\Services\Budget\BudgetThresholdReached;
 use App\Services\Content\ContentPlanMaterializer;
 use App\Services\Llm\ProviderRegistry;
+use App\Services\Publish\FakePublisher;
+use App\Services\Publish\Platforms\InstagramPublisher;
+use App\Services\Publish\Publisher;
 use App\Services\Render\FakeRenderer;
 use App\Services\Render\GotenbergRenderer;
 use App\Services\Render\HtmlRenderer;
@@ -26,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ProviderRegistry::class);
         $this->app->singleton(SchemaRepository::class);
         $this->app->singleton(TelegramClient::class, fn ($app) => config('services.telegram.client') === 'fake' ? new FakeTelegramClient : $app->make(HttpTelegramClient::class));
+        $this->app->singleton(Publisher::class, fn ($app) => config('services.publish.driver') === 'fake' ? new FakePublisher : $app->make(InstagramPublisher::class));
         $this->app->singleton(HtmlRenderer::class, fn () => config('services.renderer.driver') === 'fake' ? new FakeRenderer : new GotenbergRenderer);
     }
 
@@ -36,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Fakes must never reach production (CLAUDE.md, test isolation).
         if ($this->app->environment('production')) {
-            foreach (['llm.provider' => 'LLM_PROVIDER', 'services.renderer.driver' => 'RENDERER', 'services.telegram.client' => 'TELEGRAM_CLIENT'] as $config => $env) {
+            foreach (['llm.provider' => 'LLM_PROVIDER', 'services.renderer.driver' => 'RENDERER', 'services.telegram.client' => 'TELEGRAM_CLIENT', 'services.publish.driver' => 'PUBLISHER'] as $config => $env) {
                 if (config($config) === 'fake') {
                     throw new RuntimeException("{$env}=fake is not allowed in production.");
                 }

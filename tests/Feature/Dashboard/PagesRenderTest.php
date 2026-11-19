@@ -9,6 +9,8 @@ use App\Filament\Resources\JobRuns\Pages\ListJobRuns;
 use App\Filament\Resources\LlmCalls\Pages\ListLlmCalls;
 use App\Filament\Resources\ModelCatalog\Pages\ManageModelCatalog;
 use App\Filament\Resources\Moments\Pages\ManageMoments;
+use App\Filament\Resources\PublishJobs\Pages\ListPublishJobs;
+use App\Filament\Resources\Reports\Pages\ListReports;
 use App\Filament\Resources\RoleConfigs\Pages\ManageRoleConfigs;
 use Database\Seeders\ModelCatalogSeeder;
 use Database\Seeders\MomentCalendarSeeder;
@@ -24,7 +26,7 @@ it('renders every dashboard page', function (string $page) {
     Livewire::test($page)->assertSuccessful();
 })->with([
     Credentials::class, ListClients::class, ManageModelCatalog::class, ManageRoleConfigs::class,
-    ListLlmCalls::class, ListJobRuns::class, ListContentItems::class, ContentCalendar::class, ManageMoments::class,
+    ListLlmCalls::class, ListJobRuns::class, ListContentItems::class, ContentCalendar::class, ManageMoments::class, ListPublishJobs::class, ListReports::class,
 ]);
 
 it('renders the client edit page with its relation tabs', function () {
@@ -32,7 +34,7 @@ it('renders the client edit page with its relation tabs', function () {
 
     Livewire::test(EditClient::class, ['record' => $client->getKey()])
         ->assertSuccessful()
-        ->assertSee(['Profil & onboarding', 'Knowledge base', 'Artefak', 'Bahan riset', 'Pustaka aset', 'Kontak Telegram']);
+        ->assertSee(['Profil & onboarding', 'Knowledge base', 'Artefak', 'Bahan riset', 'Pustaka aset', 'Kontak Telegram', 'Koneksi akun']);
 });
 
 it('lists the seeded Claude models as ready to route', function () {

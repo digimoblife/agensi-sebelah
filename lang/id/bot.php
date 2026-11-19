@@ -31,5 +31,11 @@ return [
     'admin_decision_approved' => 'menyetujui',
     'admin_decision_revise' => 'meminta revisi',
     'admin_decision_rejected' => 'menolak',
+    'reminder_due' => "⏰ <b>Waktunya upload · :client</b>\n:platform :format · :time\nCaption ada di pesan berikut. Tekan tombol setelah diupload.",
+    'reminder_missed' => "⚠️ <b>Jadwal terlewat · :client</b>\n:platform :format · seharusnya :time\nMac sedang mati/sleep, jadi tidak diposting otomatis. Silakan upload manual bila masih relevan.",
+    'btn_uploaded' => '✅ Sudah diupload',
+    'uploaded' => 'Dicatat sebagai sudah diupload. Terima kasih!',
+    'publish_failed' => '❗ Gagal terbit · <b>:client</b> · :angle (kode :code). Buka dashboard untuk coba lagi atau upload manual.',
+    'report_ready' => "📊 <b>Laporan mingguan :client</b>\n:period\n\n:summary",
     'admin_budget' => 'Budget AI <b>:client</b> bulan ini sudah :percent% ($:spent dari $:limit).',
 ];

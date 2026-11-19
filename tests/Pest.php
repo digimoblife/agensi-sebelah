@@ -11,9 +11,13 @@ use App\Models\RoleConfig;
 use App\Models\User;
 use App\Models\Workspace;
 use App\Services\Artifacts\ArtifactService;
+use App\Services\Content\ContentReview;
 use App\Services\Credentials\CredentialStore;
 use App\Services\Llm\Fakes\FakeLlmProvider;
 use App\Services\Llm\ProviderRegistry;
+use App\Services\Publish\FakePublisher;
+use App\Services\Publish\Publisher;
+use App\Services\Render\ContentRenderer;
 use App\Services\Render\FakeRenderer;
 use App\Services\Render\HtmlRenderer;
 use App\Services\Telegram\FakeTelegramClient;
@@ -96,4 +100,30 @@ function awaitingItem(array $overrides = []): ContentItem
         'platform' => 'instagram', 'format' => 'carousel', 'pillar' => 'process', 'publish_date' => '2026-12-01', 'publish_time' => '19:00',
         'angle' => 'Lima langkah', 'cta' => 'Pesan kursimu', 'status' => ContentStatus::AwaitingApproval, 'draft' => $draft,
     ]);
+}
+
+function fakePublisher(): FakePublisher
+{
+    $publisher = app(Publisher::class);
+    assert($publisher instanceof FakePublisher);
+
+    return $publisher;
+}
+
+/** An approved item whose visual is final (status rendered), publishing on 2026-12-01 19:00 Jakarta. */
+function renderedItem(array $overrides = []): ContentItem
+{
+    $item = awaitingItem($overrides);
+    app(ContentRenderer::class)->render($item);
+    app(ContentReview::class)->approve($item->fresh(), 'admin:1');
+
+    return $item->fresh();
+}
+
+function linkedAdmin(int $chatId = 4242): User
+{
+    $user = admin();
+    $user->forceFill(['telegram_chat_id' => $chatId])->save();
+
+    return $user;
 }

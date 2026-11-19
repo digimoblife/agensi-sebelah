@@ -3,12 +3,15 @@
 namespace App\Services\Telegram;
 
 use App\Enums\ContentStatus;
+use App\Enums\PublishStatus;
 use App\Jobs\DraftContent;
 use App\Models\ApprovalRequest;
 use App\Models\ClientContact;
 use App\Models\ContentItem;
+use App\Models\PublishJob;
 use App\Models\User;
 use App\Services\Content\ContentReview;
+use App\Services\Publish\Publishing;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -110,6 +113,9 @@ class UpdateHandler
         $callbackId = (string) ($callback['id'] ?? '');
         $chatId = (int) ($callback['message']['chat']['id'] ?? ($callback['from']['id'] ?? 0));
         [$action, $token] = array_pad(explode(':', (string) ($callback['data'] ?? ''), 2), 2, '');
+        if ($action === 'u') {
+            return $this->uploaded($callbackId, $chatId, $token);
+        }
 
         $request = ApprovalRequest::query()->with(['contact', 'contentItem.client'])->where('token', $token)->first();
         if ($request === null || $request->decided_at !== null || $request->expires_at->isPast()) {
@@ -142,6 +148,28 @@ class UpdateHandler
             'r' => $this->askRevision($request, $callbackId),
             default => 'ignored',
         };
+    }
+
+    /** F9.5: the admin confirms a manual upload from the reminder. */
+    private function uploaded(string $callbackId, int $chatId, string $token): string
+    {
+        $job = PublishJob::query()->where('reminder_token', $token)->first();
+        $admin = User::query()->where('telegram_chat_id', $chatId)->exists();
+        if ($job === null || ! $admin) {
+            $this->telegram->answerCallback($callbackId, __('bot.not_allowed'));
+
+            return 'not_allowed';
+        }
+        if (! in_array($job->status, [PublishStatus::Packaged, PublishStatus::Missed], true)) {
+            $this->telegram->answerCallback($callbackId, __('bot.expired'));
+
+            return 'stale';
+        }
+
+        app(Publishing::class)->markUploaded($job, "admin_chat:{$chatId}");
+        $this->telegram->answerCallback($callbackId, __('bot.uploaded'));
+
+        return 'uploaded';
     }
 
     private function decide(ApprovalRequest $request, string $callbackId, string $decision, callable $apply, string $reply): string

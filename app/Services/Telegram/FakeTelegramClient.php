@@ -38,6 +38,13 @@ final class FakeTelegramClient implements TelegramClient
         return ++$this->messageId;
     }
 
+    public function sendDocument(int $chatId, string $name, string $contents, ?string $caption = null): int
+    {
+        $this->sent[] = ['type' => 'document', 'chat_id' => $chatId, 'text' => $name, 'markup' => null, 'photos' => 0];
+
+        return ++$this->messageId;
+    }
+
     public function answerCallback(string $callbackId, string $text): void
     {
         $this->answers[] = ['id' => $callbackId, 'text' => $text];
