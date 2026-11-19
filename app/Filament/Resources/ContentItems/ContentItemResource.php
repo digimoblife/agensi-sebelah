@@ -9,13 +9,16 @@ use App\Models\Asset;
 use App\Models\Client;
 use App\Models\ContentItem;
 use App\Models\User;
+use App\Services\Content\AiImageUpload;
 use App\Services\Content\ContentReview;
+use App\Services\Content\ImagePrompt;
 use App\Services\Publish\Publishing;
 use BackedEnum;
 use Carbon\CarbonImmutable;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ImageEntry;
@@ -27,6 +30,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
@@ -76,6 +80,15 @@ class ContentItemResource extends Resource
                 TextEntry::make('render.needs_video')->label('Catatan')->visible(fn (ContentItem $r) => (bool) ($r->render['needs_video'] ?? false))
                     ->formatStateUsing(fn () => 'Format video: gambar ini sampul. Klip video menyusul (fase 2).'),
             ]),
+            Section::make('Gambar AI')->visible(fn (ContentItem $r) => $r->wantsAiImage() || $r->visual_asset_id !== null)->schema([
+                TextEntry::make('ai_image_status')->hiddenLabel()
+                    ->state(fn (ContentItem $r) => $r->awaitsAiImage()
+                        ? 'Menunggu gambar: salin prompt, buat gambarnya di ChatGPT/Gemini, lalu unggah. Konten belum dikirim ke klien.'
+                        : 'Gambar AI sudah diunggah dan dipakai sebagai latar visual.'),
+                ImageEntry::make('ai_image_preview')->hiddenLabel()->imageHeight(220)->checkFileExistence(false)
+                    ->visible(fn (ContentItem $r) => $r->visual_asset_id !== null)
+                    ->state(fn (ContentItem $r) => $r->visualAsset?->previewUrl()),
+            ]),
             Section::make('Draf')->visible(fn (ContentItem $r) => $r->draft !== null)->schema([
                 TextEntry::make('draft.hook')->label('Hook')->placeholder('—'),
                 TextEntry::make('draft.caption')->label('Caption')->prose(),
@@ -113,6 +126,9 @@ class ContentItemResource extends Resource
                 TextColumn::make('format'),
                 TextColumn::make('angle')->limit(60)->tooltip(fn (ContentItem $r) => $r->angle)->searchable(),
                 TextColumn::make('status')->badge()->formatStateUsing(fn (ContentStatus $state) => $state->label())->color(fn (ContentStatus $state) => $state->color()),
+                TextColumn::make('ai_image')->label('Gambar AI')->badge()->placeholder('—')
+                    ->state(fn (ContentItem $r) => $r->wantsAiImage() ? ($r->awaitsAiImage() ? 'Menunggu' : 'Ada') : null)
+                    ->color(fn (?string $state) => $state === 'Menunggu' ? 'warning' : 'success'),
                 TextColumn::make('revision_count')->label('Rev.')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('publish_date')
@@ -120,6 +136,8 @@ class ContentItemResource extends Resource
             ->filters([
                 SelectFilter::make('client_id')->label('Klien')->relationship('client', 'name'),
                 SelectFilter::make('status')->multiple()->options(collect(ContentStatus::cases())->mapWithKeys(fn ($s) => [$s->value => $s->label()])),
+                Filter::make('awaiting_ai_image')->label('Menunggu gambar AI')
+                    ->query(fn ($query) => $query->whereNull('visual_asset_id')->where('draft->visual->mode', 'ai_image')),
                 SelectFilter::make('month')->label('Bulan')->options(fn () => ContentItem::query()->distinct()->orderByDesc('month')->pluck('month', 'month')),
             ])
             ->recordActions(static::recordActions())
@@ -138,8 +156,26 @@ class ContentItemResource extends Resource
         return [
             Action::make('view')->label('Lihat')->icon('heroicon-o-eye')->modalSubmitAction(false)
                 ->schema(fn (Schema $schema) => static::infolist($schema)),
+            Action::make('image_prompt')->label('Salin prompt gambar')->icon('heroicon-o-clipboard-document')->color('gray')
+                ->visible(fn (ContentItem $r) => $r->draft !== null && in_array($r->status, AiImageUpload::STATUSES, true))
+                ->modalHeading('Prompt gambar')->modalSubmitAction(false)->modalCancelActionLabel('Tutup')
+                ->modalDescription('Tempel di ChatGPT atau Gemini, pilih hasil terbaik, lalu klik "Unggah gambar AI". Headline, logo, dan CTA ditambahkan otomatis oleh template.')
+                ->schema([TextEntry::make('prompt')->hiddenLabel()->copyable()->copyMessage('Prompt disalin')
+                    ->state(fn (ContentItem $r) => app(ImagePrompt::class)->for($r))->extraAttributes(['style' => 'white-space:pre-line'])]),
+            Action::make('upload_ai_image')->label('Unggah gambar AI')->icon('heroicon-o-photo')->color('gray')
+                ->visible(fn (ContentItem $r) => $r->draft !== null && in_array($r->status, AiImageUpload::STATUSES, true))
+                ->schema(fn (ContentItem $r) => [FileUpload::make('image')->label('Gambar hasil generate')->required()->image()
+                    ->disk('assets')->directory($r->client->ulid ?? 'unknown')->visibility('private')
+                    ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/webp'])->maxSize(20480)
+                    ->helperText('PNG/JPG/WebP, maks. 20 MB. Rasio sesuai format: 4:5 untuk feed/carousel, 9:16 untuk story/reel.')])
+                ->action(function (ContentItem $r, array $data) {
+                    app(AiImageUpload::class)->attach($r, (string) $data['image']);
+                    Notification::make()->title($r->status === ContentStatus::AwaitingApproval
+                        ? 'Gambar dipakai. Visual dirender dan dikirim ke klien.'
+                        : 'Gambar disimpan. Dipakai saat konten lolos Brand Guardian.')->success()->send();
+                }),
             Action::make('send')->label('Render & kirim ke klien')->icon('heroicon-o-paper-airplane')->color('gray')
-                ->visible(fn (ContentItem $r) => $r->status === ContentStatus::AwaitingApproval)
+                ->visible(fn (ContentItem $r) => $r->status === ContentStatus::AwaitingApproval && ! $r->awaitsAiImage())
                 ->requiresConfirmation()->modalDescription('Visual dirender ulang bila draf berubah, lalu dikirim ke kontak approver lewat Telegram.')
                 ->action(function (ContentItem $r) {
                     dispatch(new RenderAndSend([$r->id]));

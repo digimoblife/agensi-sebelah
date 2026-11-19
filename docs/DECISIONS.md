@@ -85,3 +85,11 @@ Setiap entri menyebut ID fitur PRD atau kode celah (K1–K10) terkait.
 - **Gerbang MVP** (`MvpGate`): minggu berjalan dihitung dari konten pertama yang terbit/diupload; % tanpa revisi besar = item yang sudah diputuskan, bukan ditolak, dan tidak `major_revision`; biaya bulan ini = `llm_calls` + biaya media; perbandingan dengan baseline Paperclip yang diisi admin (`workspaces.settings.paperclip_baseline_usd`). Waktu PM per klien dicatat manual (`docs/PILOT-CHECKLIST.md` tabel E).
 - **Klien demo** (`demo:seed`, `--with-artifacts`, `--purge`): data fiktif yang ditandai `[DEMO]` untuk uji kering; gambar placeholder berupa blok warna. Bukan acuan desain produk.
 - **Test end-to-end** (`tests/Feature/EndToEnd/PilotFlowTest.php`) menjalankan satu putaran penuh dengan semua layanan luar dipalsukan.
+
+## Tambahan — gambar AI manual lewat aplikasi chat (19 Nov 2026)
+
+- **Keputusan owner**: untuk hemat biaya, gambar AI dibuat manual. Dashboard menyusun prompt siap tempel (`ImagePrompt`: prompt Copywriter + gaya, palet warna, dan `image_prompt_suffix` dari Visual Rules + rasio sesuai format + larangan: teks/tulisan, logo, wajah orang nyata, dan daftar `ai_forbidden_for` brand). Admin membuat gambarnya di ChatGPT/Gemini lalu mengunggahnya ke item konten (**Konten → Unggah gambar AI**).
+- Ini tidak bertentangan dengan PRD "API key berbayar, bukan login langganan chat": aturan itu untuk panggilan otomatis dari sistem; di sini manusia yang memakai aplikasi chat.
+- Gambar disimpan sebagai aset `ai_image` (`ai_generated = true`) dan hanya dipakai item itu sebagai latar; template tetap menambahkan headline, logo, dan CTA. Pemilih foto otomatis tidak memakai aset `ai_image`.
+- Item yang draf-nya meminta gambar AI (`visual.mode = ai_image`) **tidak dirender dan tidak dikirim ke klien** sampai gambar diunggah. Mengganti gambar membuat render lama usang dan visual dikirim ulang. Setelah konten disetujui, gambar tidak bisa diganti lagi lewat jalur ini.
+- **Label konten AI tidak ditambahkan otomatis** ke paket siap upload maupun pengingat Telegram (keputusan owner). Penandaan label di Meta/TikTok diputuskan admin saat upload. Pengiriman prompt dan penerimaan gambar lewat Telegram belum dibuat.

@@ -25,7 +25,7 @@ class ContentItem extends Model
     protected $fillable = [
         'workspace_id', 'client_id', 'content_plan_version_id', 'month', 'plan_item_key', 'offering_id', 'platform',
         'format', 'pillar', 'moment_key', 'publish_date', 'publish_time', 'angle', 'cta', 'asset_hint', 'status', 'draft',
-        'guardian', 'render', 'sent_for_approval_at', 'revision_comment', 'revision_count', 'auto_revision_count', 'major_revision', 'last_llm_call_id',
+        'guardian', 'render', 'visual_asset_id', 'sent_for_approval_at', 'revision_comment', 'revision_count', 'auto_revision_count', 'major_revision', 'last_llm_call_id',
     ];
 
     protected function casts(): array
@@ -57,6 +57,24 @@ class ContentItem extends Model
     public function offering(): BelongsTo
     {
         return $this->belongsTo(Offering::class);
+    }
+
+    /** @return BelongsTo<Asset, $this> */
+    public function visualAsset(): BelongsTo
+    {
+        return $this->belongsTo(Asset::class, 'visual_asset_id');
+    }
+
+    /** The draft asks for an AI image (generated manually in a chat app and uploaded). */
+    public function wantsAiImage(): bool
+    {
+        return ($this->draft['visual']['mode'] ?? null) === 'ai_image';
+    }
+
+    /** An AI image is wanted but not uploaded yet: the item must not be rendered or sent to the client. */
+    public function awaitsAiImage(): bool
+    {
+        return $this->wantsAiImage() && $this->visual_asset_id === null;
     }
 
     /** @return HasMany<Approval, $this> */

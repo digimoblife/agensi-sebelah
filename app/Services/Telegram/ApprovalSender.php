@@ -19,7 +19,7 @@ class ApprovalSender
     /** @return int number of contacts reached */
     public function send(ContentItem $item): int
     {
-        if ($item->status !== ContentStatus::AwaitingApproval || $item->draft === null) {
+        if ($item->status !== ContentStatus::AwaitingApproval || $item->draft === null || $item->awaitsAiImage()) {
             return 0;
         }
 

@@ -57,9 +57,11 @@ class ContentRenderer
         [$width, $height] = self::SIZES[$item->format];
         $draft = $item->draft;
         $logo = $this->assets->logo($client, $rules['logo']['asset_id'] ?? null);
-        $photo = ($draft['visual']['mode'] ?? 'template') === 'asset' || $item->format !== 'carousel'
-            ? $this->assets->pick($client, ($draft['visual']['asset_query'] ?? null) ?: $item->asset_hint, $item->offering_id)
-            : null;
+        // An uploaded AI image (manual chat-app flow) always wins; otherwise pick a library photo.
+        $photo = $item->visualAsset()->first()
+            ?? (($draft['visual']['mode'] ?? 'template') === 'asset' || $item->format !== 'carousel'
+                ? $this->assets->pick($client, ($draft['visual']['asset_query'] ?? null) ?: $item->asset_hint, $item->offering_id)
+                : null);
 
         $heading = $this->fonts->faces((string) ($rules['typography']['heading_font'] ?? ''));
         $body = $this->fonts->faces((string) ($rules['typography']['body_font'] ?? ''));
@@ -128,10 +130,13 @@ class ContentRenderer
         };
     }
 
-    /** Canonical hash: PostgreSQL jsonb does not keep key order, so keys are sorted first. */
+    /**
+     * Canonical hash of what the render depends on: the draft (PostgreSQL jsonb does not keep key order, so keys
+     * are sorted first) and the uploaded AI image, so replacing the image makes the render stale.
+     */
     private function hash(ContentItem $item): string
     {
-        return sha1((string) json_encode($this->canonical((array) $item->draft), JSON_UNESCAPED_UNICODE));
+        return sha1((string) json_encode($this->canonical((array) $item->draft), JSON_UNESCAPED_UNICODE).'|'.($item->visual_asset_id ?? ''));
     }
 
     /**

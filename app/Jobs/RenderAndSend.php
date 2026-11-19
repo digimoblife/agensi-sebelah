@@ -34,6 +34,11 @@ class RenderAndSend implements ShouldQueue
         $items = ContentItem::query()->whereIn('id', $this->itemIds)->where('status', ContentStatus::AwaitingApproval)->get();
 
         foreach ($items as $item) {
+            // Waiting for the admin to upload the AI image: no render, nothing sent to the client yet.
+            if ($item->awaitsAiImage()) {
+                continue;
+            }
+
             if ($renderer->supports($item) && ! $renderer->isCurrent($item)) {
                 try {
                     $renderer->render($item);
