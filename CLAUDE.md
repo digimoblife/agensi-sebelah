@@ -54,10 +54,16 @@ Docker Compose lokal: `app`, `worker`, `scheduler`, `telegram-poller`, `postgres
 - Di test semua penyedia keluar dipaksa fake (`LLM_PROVIDER=fake`, `TELEGRAM_CLIENT=fake`, `PUBLISHER=fake`,
   `RENDERER=fake`) dan `Http::preventStrayRequests()` aktif. Tidak ada test yang memanggil API sungguhan.
 
-## Perintah (dibuat saat scaffolding; sesuaikan bila berbeda)
+## Perintah
+
+Tidak ada PHP/Composer di host; semua lewat container. Dashboard: http://localhost:8088/admin, Horizon: /horizon.
 
 ```
+cp .env.example .env   # isi DB_PASSWORD, REDIS_PASSWORD, HOST_UID/GID (id -u / id -g), lalu:
 docker compose up -d
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate
+docker compose exec app php artisan make:filament-user
 docker compose exec app php artisan test
 docker compose exec app ./vendor/bin/pint
 docker compose exec app ./vendor/bin/phpstan analyse
@@ -65,8 +71,9 @@ docker compose exec app ./vendor/bin/phpstan analyse
 
 Validasi schema artefak secara lokal: lihat `docs/ARTIFACTS.md` §Validasi lokal (Ajv strict, draft 2020-12).
 
-Scaffolding Laravel: direktori ini tidak kosong, jadi buat project di folder sementara lalu pindahkan isinya
-(jangan menimpa `docs/`, `resources/schemas/`, `CLAUDE.md`, `.gitignore`).
+Test memakai database `agensi_test` (dibuat `docker/postgres/init-test-db.sh` saat volume Postgres pertama kali dibuat);
+`tests/TestCase.php` menolak boot jika database bukan `*_test`. Setting baru yang menunjuk layanan luar wajib dikunci di
+`tests/bootstrap.php` dan ditambahkan ke `tests/Feature/TestIsolationTest.php`.
 
 Definition of Done: test hijau, pint + phpstan bersih, `migrate:fresh --seed` jalan, contoh artefak lolos schema,
 tidak ada secret di diff, PRD section terkait sudah dicek ulang.

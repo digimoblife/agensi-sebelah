@@ -1,0 +1,110 @@
+# Local-first stack (ADR 0001, 0003). Everything binds to loopback only.
+x-app: &app
+  image: agensi-app:latest
+  build:
+    context: .
+    dockerfile: docker/php/Dockerfile
+    target: dev
+    args:
+      UID: ${HOST_UID:-501}
+      GID: ${HOST_GID:-20}
+  restart: unless-stopped
+  volumes:
+    - .:/var/www/html
+    - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+  environment:
+    - APP_ENV=${APP_ENV:-local}
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  networks: [internal, public]
+
+services:
+  app:
+    <<: *app
+    healthcheck:
+      test: ["CMD-SHELL", "php artisan --version || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Horizon supervises the default, llm, render, publish and analytics queues (config/horizon.php).
+  worker:
+    <<: *app
+    command: ["php", "artisan", "horizon"]
+
+  scheduler:
+    <<: *app
+    command: ["php", "artisan", "schedule:work"]
+
+  # Telegram long polling (ADR 0004). Enabled once the poller command exists: `docker compose --profile telegram up -d`.
+  telegram-poller:
+    <<: *app
+    profiles: ["telegram"]
+    command: ["php", "artisan", "telegram:poll"]
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-agensi}
+      POSTGRES_USER: ${DB_USERNAME:-agensi}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init-test-db.sh:/docker-entrypoint-initdb.d/init-test-db.sh:ro
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-agensi} -d ${DB_DATABASE:-agensi}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["sh", "-c", "redis-server --requirepass \"$$REDIS_PASSWORD\" --appendonly yes"]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep PONG || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  gotenberg:
+    image: gotenberg/gotenberg:8.37.0
+    restart: unless-stopped
+    command: ["gotenberg", "--chromium-max-concurrency=2", "--api-timeout=60s"]
+    networks: [internal]
+
+  # The Node + Playwright `renderer` service (ADR 0001) is added in MVP week 4 together with its code.
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${APP_PORT:-8088}:80"
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    networks: [public]
+
+networks:
+  internal:
+    internal: true
+  public:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
