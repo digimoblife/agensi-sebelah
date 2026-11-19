@@ -1,6 +1,8 @@
 <?php
 
 use App\Roles\Validators\ContentBatchValidator;
+use App\Roles\Validators\ContentPlanValidator;
+use App\Roles\Validators\GuardianReviewValidator;
 use App\Roles\Validators\ResearchPackValidator;
 
 /*
@@ -62,6 +64,7 @@ return [
         'prompt' => 'content_strategist',
         'prompt_version' => 1,
         'output_schema' => 'content_plan.v1',
+        'validator' => ContentPlanValidator::class,
         'artifact_inputs' => ['brand_brief', 'research_pack'],
         'uses_facts' => true,
         'capabilities' => ['text'],
@@ -83,6 +86,21 @@ return [
         'effort' => 'low',
         'max_output_tokens' => 16000,
         'expected_output_tokens' => 8000,
+        'allow_downgrade' => true,
+    ],
+    'brand_guardian' => [
+        'label' => 'Brand Guardian',
+        'tier' => 't1',
+        'prompt' => 'brand_guardian',
+        'prompt_version' => 1,
+        'output_schema' => 'guardian_review.v1',
+        'validator' => GuardianReviewValidator::class,
+        'artifact_inputs' => ['brand_brief'],
+        'uses_facts' => true,
+        'capabilities' => ['text'],
+        'effort' => 'low',
+        'max_output_tokens' => 6000,
+        'expected_output_tokens' => 1500,
         'allow_downgrade' => true,
     ],
 ];

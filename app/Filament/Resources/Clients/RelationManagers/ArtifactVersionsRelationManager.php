@@ -12,7 +12,10 @@ use App\Services\Artifacts\ArtifactGeneration;
 use App\Services\Artifacts\ArtifactService;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
@@ -35,16 +38,33 @@ class ArtifactVersionsRelationManager extends RelationManager
                 ArtifactType::BrandBrief => 'Buat Brand Brief',
                 ArtifactType::VisualRules => 'Buat Visual Rules',
                 ArtifactType::ResearchPack => 'Buat Research Pack',
+                ArtifactType::ContentPlan => 'Buat Content Plan',
                 default => $type->value,
             })
-            ->requiresConfirmation()
             ->modalDescription('Dijalankan di antrian dan memakai budget AI klien. Hasilnya berupa draf untuk ditinjau.')
-            ->action(function () use ($type) {
+            ->schema($type === ArtifactType::ContentPlan ? [
+                Select::make('month')->label('Bulan')->required()->default(now('Asia/Jakarta')->addMonth()->format('Y-m'))
+                    ->options(collect(range(0, 3))->mapWithKeys(fn (int $i) => [
+                        now('Asia/Jakarta')->startOfMonth()->addMonths($i)->format('Y-m') => now('Asia/Jakarta')->startOfMonth()->addMonths($i)->format('m/Y'),
+                    ])),
+                TextInput::make('posts_per_week')->label('Konten per minggu')->integer()->minValue(1)->maxValue(14)->default(3)->required(),
+                CheckboxList::make('platforms')->label('Platform')->required()->default(['instagram'])
+                    ->options(['instagram' => 'Instagram', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'google_business_profile' => 'Google Business Profile']),
+                Textarea::make('notes')->label('Catatan untuk Content Strategist')->rows(3)->maxLength(1000),
+            ] : [])
+            ->requiresConfirmation($type !== ArtifactType::ContentPlan)
+            ->action(function (array $data) use ($type) {
                 /** @var Client $client */
                 $client = $this->getOwnerRecord();
                 /** @var User $user */
                 $user = Auth::user();
-                $queued = GenerateArtifact::request($client, $type, $user);
+                $options = $type === ArtifactType::ContentPlan ? [
+                    'month' => (string) $data['month'],
+                    'posts_per_week' => (int) $data['posts_per_week'],
+                    'platforms' => array_values((array) $data['platforms']),
+                    'notes' => isset($data['notes']) ? (string) $data['notes'] : null,
+                ] : [];
+                $queued = GenerateArtifact::request($client, $type, $user, $options);
 
                 Notification::make()
                     ->title($queued ? 'Masuk antrian. Notifikasi muncul saat selesai.' : 'Pembuatan yang sama masih berjalan.')
@@ -55,6 +75,7 @@ class ArtifactVersionsRelationManager extends RelationManager
             ->modifyQueryUsing(fn ($query) => $query->with('artifact'))
             ->columns([
                 TextColumn::make('artifact.type')->label('Artefak')->formatStateUsing(fn (ArtifactType $state) => str_replace('_', ' ', ucfirst($state->value))),
+                TextColumn::make('artifact.scope_ref')->label('Periode')->placeholder('—'),
                 TextColumn::make('version')->label('Versi')->formatStateUsing(fn ($state) => "v{$state}"),
                 TextColumn::make('status')->badge()->color(fn (ArtifactStatus $state) => match ($state) {
                     ArtifactStatus::Approved => 'success', ArtifactStatus::Draft, ArtifactStatus::InReview => 'info', default => 'gray',
@@ -90,7 +111,8 @@ class ArtifactVersionsRelationManager extends RelationManager
                         /** @var User $user */
                         $user = Auth::user();
                         app(ArtifactService::class)->approve($r, $user);
-                        Notification::make()->title("v{$r->version} disetujui.")->success()->send();
+                        Notification::make()->title("v{$r->version} disetujui.")
+                            ->body($r->artifact->type === ArtifactType::ContentPlan ? 'Item konten dibuat di menu Konten.' : null)->success()->send();
                     }),
             ]);
     }

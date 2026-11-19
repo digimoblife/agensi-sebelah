@@ -11,8 +11,15 @@ interface ArtifactGenerator
 {
     public function type(): ArtifactType;
 
-    /** @throws PrerequisiteMissing */
-    public function request(Client $client): RoleRequest;
+    /**
+     * @param  array<string, mixed>  $options  generator-specific input from the admin (e.g. month)
+     *
+     * @throws PrerequisiteMissing
+     */
+    public function request(Client $client, array $options = []): RoleRequest;
+
+    /** @param  array<string, mixed>  $options */
+    public function scopeRef(array $options): ?string;
 
     /**
      * Overwrite anything that must come from the backend, not the model (T0 data such as sources or volumes).

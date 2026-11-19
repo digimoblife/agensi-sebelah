@@ -78,7 +78,7 @@ class ArtifactService
             throw new LogicException("Only draft or in-review versions can be approved (got {$version->status->value}).");
         }
 
-        return DB::transaction(function () use ($version, $user) {
+        $approved = DB::transaction(function () use ($version, $user) {
             ArtifactVersion::query()
                 ->where('artifact_id', $version->artifact_id)
                 ->where('status', ArtifactStatus::Approved)
@@ -88,6 +88,10 @@ class ArtifactService
 
             return $version;
         });
+
+        ArtifactApproved::dispatch($approved);
+
+        return $approved;
     }
 
     /** The version other roles may read: the latest approved one. */

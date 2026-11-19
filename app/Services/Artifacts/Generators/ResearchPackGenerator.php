@@ -28,7 +28,7 @@ final class ResearchPackGenerator implements ArtifactGenerator
         return ArtifactType::ResearchPack;
     }
 
-    public function request(Client $client): RoleRequest
+    public function request(Client $client, array $options = []): RoleRequest
     {
         $inputs = $client->researchInputs()->orderBy('id')->limit(30)->get();
         if ($inputs->isEmpty()) {
@@ -60,6 +60,11 @@ final class ResearchPackGenerator implements ArtifactGenerator
                 'sources' => $sources,
             ]),
         );
+    }
+
+    public function scopeRef(array $options): ?string
+    {
+        return null;
     }
 
     public function finalize(array $payload, Client $client, RoleRequest $request): array

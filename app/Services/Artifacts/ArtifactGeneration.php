@@ -7,6 +7,7 @@ use App\Models\ArtifactVersion;
 use App\Models\Client;
 use App\Services\Artifacts\Generators\ArtifactGenerator;
 use App\Services\Artifacts\Generators\BrandBriefGenerator;
+use App\Services\Artifacts\Generators\ContentPlanGenerator;
 use App\Services\Artifacts\Generators\ResearchPackGenerator;
 use App\Services\Artifacts\Generators\VisualRulesGenerator;
 use App\Services\Llm\LlmGateway;
@@ -17,10 +18,11 @@ class ArtifactGeneration
 {
     public function __construct(private readonly LlmGateway $gateway, private readonly ArtifactService $artifacts) {}
 
-    public function generate(Client $client, ArtifactType $type): ArtifactVersion
+    /** @param  array<string, mixed>  $options */
+    public function generate(Client $client, ArtifactType $type, array $options = []): ArtifactVersion
     {
         $generator = $this->generator($type);
-        $request = $generator->request($client);
+        $request = $generator->request($client, $options);
         $result = $this->gateway->run($request);
         $payload = $generator->finalize($result->payload, $client, $request);
 
@@ -28,6 +30,7 @@ class ArtifactGeneration
             $client,
             $type,
             $payload,
+            scopeRef: $generator->scopeRef($options),
             llmCallId: $result->llmCallId,
             changeNote: "Dibuat AI ({$result->modelId})",
         );
@@ -36,7 +39,7 @@ class ArtifactGeneration
     /** @return list<ArtifactType> */
     public static function supported(): array
     {
-        return [ArtifactType::BrandBrief, ArtifactType::VisualRules, ArtifactType::ResearchPack];
+        return [ArtifactType::BrandBrief, ArtifactType::VisualRules, ArtifactType::ResearchPack, ArtifactType::ContentPlan];
     }
 
     private function generator(ArtifactType $type): ArtifactGenerator
@@ -45,6 +48,7 @@ class ArtifactGeneration
             ArtifactType::BrandBrief => app(BrandBriefGenerator::class),
             ArtifactType::VisualRules => app(VisualRulesGenerator::class),
             ArtifactType::ResearchPack => app(ResearchPackGenerator::class),
+            ArtifactType::ContentPlan => app(ContentPlanGenerator::class),
             default => throw new InvalidArgumentException("No generator for {$type->value} yet."),
         };
     }

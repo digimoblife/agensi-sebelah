@@ -19,7 +19,7 @@ final class VisualRulesGenerator implements ArtifactGenerator
         return ArtifactType::VisualRules;
     }
 
-    public function request(Client $client): RoleRequest
+    public function request(Client $client, array $options = []): RoleRequest
     {
         $brief = $this->context->approved($client, ArtifactType::BrandBrief)
             ?? throw new PrerequisiteMissing('Setujui Brand Brief terlebih dahulu.');
@@ -37,6 +37,11 @@ final class VisualRulesGenerator implements ArtifactGenerator
                 'aset_yang_dibutuhkan' => collect($this->context->offeringProfiles($client))->pluck('jenis')->all(),
             ]),
         );
+    }
+
+    public function scopeRef(array $options): ?string
+    {
+        return null;
     }
 
     public function finalize(array $payload, Client $client, RoleRequest $request): array

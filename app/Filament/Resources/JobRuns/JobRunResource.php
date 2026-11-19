@@ -72,7 +72,7 @@ class JobRunResource extends Resource
                         $client = Client::query()->findOrFail($r->client_id);
                         /** @var User $user */
                         $user = Auth::user();
-                        GenerateArtifact::request($client, ArtifactType::from(substr($r->job, strlen('generate_artifact:'))), $user);
+                        GenerateArtifact::request($client, ArtifactType::from(substr($r->job, strlen('generate_artifact:'))), $user, $r->options ?? []);
                         Notification::make()->title('Masuk antrian lagi.')->success()->send();
                     }),
             ]);

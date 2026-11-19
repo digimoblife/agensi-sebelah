@@ -1,0 +1,11 @@
+{
+  "items": [
+    {
+      "plan_item_key": "dec-01-process",
+      "verdict": "pass",
+      "issues": [
+        { "type": "typo", "severity": "minor", "note": "\"tanah liat\" ditulis konsisten.", "suggestion": "Tidak perlu diubah." }
+      ]
+    }
+  ]
+}

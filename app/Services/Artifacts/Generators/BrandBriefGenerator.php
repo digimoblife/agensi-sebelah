@@ -18,7 +18,7 @@ final class BrandBriefGenerator implements ArtifactGenerator
         return ArtifactType::BrandBrief;
     }
 
-    public function request(Client $client): RoleRequest
+    public function request(Client $client, array $options = []): RoleRequest
     {
         $onboarding = $this->context->onboarding($client);
         if (($onboarding['business_description'] ?? '') === '') {
@@ -47,6 +47,11 @@ final class BrandBriefGenerator implements ArtifactGenerator
                 'goal_kpi' => $this->context->goals($client),
             ]),
         );
+    }
+
+    public function scopeRef(array $options): ?string
+    {
+        return null;
     }
 
     public function finalize(array $payload, Client $client, RoleRequest $request): array

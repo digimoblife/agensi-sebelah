@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             WorkspaceSeeder::class,
             ModelCatalogSeeder::class,
             OfferingTypeSeeder::class,
+            MomentCalendarSeeder::class,
         ]);
     }
 }

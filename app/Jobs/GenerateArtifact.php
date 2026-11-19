@@ -30,26 +30,34 @@ class GenerateArtifact implements ShouldQueue
 
     public int $timeout = 600;
 
-    public function __construct(public readonly int $jobRunId, public readonly int $clientId, public readonly ArtifactType $type)
-    {
+    /** @param  array<string, scalar|list<scalar>|null>  $options */
+    public function __construct(
+        public readonly int $jobRunId,
+        public readonly int $clientId,
+        public readonly ArtifactType $type,
+        public readonly array $options = [],
+    ) {
         $this->onQueue('llm');
     }
 
     /** Queue a generation unless the same one is already waiting or running. */
-    public static function request(Client $client, ArtifactType $type, ?User $user): bool
+    /** @param  array<string, scalar|list<scalar>|null>  $options */
+    public static function request(Client $client, ArtifactType $type, ?User $user, array $options = []): bool
     {
+        $scope = is_string($options['month'] ?? null) ? ':'.$options['month'] : '';
         $run = app(JobRunRecorder::class)->queue(
-            "generate_artifact:{$client->id}:{$type->value}",
+            "generate_artifact:{$client->id}:{$type->value}{$scope}",
             'generate_artifact:'.$type->value,
             $client->workspace_id,
             $client->id,
             $user,
+            $options,
         );
         if ($run === null) {
             return false;
         }
 
-        dispatch(new self($run->id, $client->id, $type));
+        dispatch(new self($run->id, $client->id, $type, $options));
 
         return true;
     }
@@ -66,7 +74,7 @@ class GenerateArtifact implements ShouldQueue
         $label = str_replace('_', ' ', ucfirst($this->type->value));
 
         try {
-            $version = $generation->generate($client, $this->type);
+            $version = $generation->generate($client, $this->type, $this->options);
         } catch (PrerequisiteMissing $e) {
             $recorder->fail($run, 'prerequisite_missing');
             $this->notify($run, "{$label} belum bisa dibuat", $e->getMessage(), 'warning');

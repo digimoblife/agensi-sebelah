@@ -38,3 +38,17 @@ Setiap entri menyebut ID fitur PRD atau kode celah (K1–K10) terkait.
 - **Edit artefak oleh admin** = versi baru yang divalidasi schema; versi lama tidak diubah.
 - **Budget per klien** bisa diisi di profil klien; kosong = default `config/llm.php`.
 - Koneksi OAuth akun klien (F1.2) belum dibuat; checklist akses akun dipakai dulu. OAuth dikerjakan bersama publish IG (Minggu 5) dan analitik.
+
+## Minggu 3 — Content Plan, batch copy, Brand Guardian (19 Nov 2026)
+
+- **Kalender momen** (F9.7) global dan bisa diedit admin. Seeder mengisi tahun berjalan + 2 tahun. Ramadan, Idul Fitri, Idul Adha, dan libur sekolah ditandai *perkiraan* (hisab) dan perlu disesuaikan dengan SKB pemerintah. Tanggal gajian = tanggal 25 sampai akhir bulan.
+- **Content Plan** adalah artefak per bulan (`scope_ref = YYYY-MM`). Admin memilih bulan, jumlah konten per minggu, dan platform. Format per platform dibatasi ke yang bisa dibuat MVP (`ContentPlanGenerator::FORMATS`). Validator menolak tanggal di luar bulan, kunci ganda, pilar yang tidak ada di Brand Brief, momen/penawaran yang tidak diberikan, dan kombinasi platform/format yang tidak diminta.
+- **Materialisasi**: menyetujui Content Plan membuat/menyelaraskan `content_items` lewat event `ArtifactApproved`. Item yang sudah ditulis tidak diubah oleh plan baru; item yang hilang dari plan dibatalkan bila belum disetujui. Aturan lengkap di `docs/WORKFLOWS.md`.
+- **Status konten** hanya lewat `ContentWorkflow` (matriks dikunci test). Nilai status Minggu 4–5 (render, jadwal, publish, paket) sudah ada di CHECK constraint agar tidak perlu migrasi ulang.
+- **Copywriter** menulis per batch 10 item (`ContentDrafting::BATCH_SIZE`) dalam satu panggilan. Revisi hanya mengirim item yang direvisi + komentar + draf sebelumnya. Panggilan gagal mengembalikan item ke status sebelumnya.
+- **Brand Guardian**: aturan kode (T0) dulu: panjang caption/hashtag per platform, kata terlarang Brand Brief, angka/harga/jadwal tanpa `fact_refs`, headline melebihi batas template, carousel < 2 slide, emoji untuk brand tanpa emoji, link non-https. Draf yang sudah gagal aturan tidak dikirim ke review LLM (hemat token). Review LLM (T1, batch) menilai tone, klaim, fakta, kepatuhan, typo. Isu *major* = gagal.
+- **Revisi otomatis maksimal 1 kali** per item atas temuan Guardian (tidak dihitung sebagai revisi manusia). Gagal lagi → `guardian_failed`, admin bisa *Loloskan* dengan alasan tercatat.
+- **Revisi besar (K5)** terisi otomatis: ditolak, direvisi manusia lebih dari sekali, atau ditandai *besar* saat minta revisi.
+- **Approval dashboard** memakai `ContentReview`; Telegram (Minggu 4) memakai service yang sama. Setiap keputusan tercatat di `approvals` (komentar, tag alasan, major) untuk F9.4.
+- **job_runs.options** menyimpan opsi job (mis. bulan Content Plan) agar Konsol job bisa menjalankan ulang persis sama.
+- **Kalender konten** (F2.3) berupa halaman bulanan sederhana dengan item dan momen. Interaksi (drag-and-drop jadwal) belum ada; perubahan tanggal lewat revisi Content Plan.

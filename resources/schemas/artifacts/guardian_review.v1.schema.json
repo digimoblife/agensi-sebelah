@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agensi-sebelah.local/schemas/guardian_review.v1.schema.json",
+  "title": "Guardian Review (output LLM)",
+  "description": "Brand Guardian (T1) review of a batch of content drafts. Not stored as an artifact; saved per content item.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["items"],
+  "properties": {
+    "items": {
+      "type": "array", "minItems": 1, "maxItems": 30,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["plan_item_key", "verdict", "issues"],
+        "properties": {
+          "plan_item_key": { "type": "string", "pattern": "^[a-z0-9_-]{2,40}$" },
+          "verdict": { "type": "string", "enum": ["pass", "fail"] },
+          "issues": {
+            "type": "array", "maxItems": 10,
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["type", "severity", "note"],
+              "properties": {
+                "type": { "type": "string", "enum": ["tone", "claim", "fact", "typo", "compliance", "length", "other"] },
+                "severity": { "type": "string", "enum": ["minor", "major"] },
+                "note": { "type": "string", "maxLength": 300 },
+                "suggestion": { "type": "string", "maxLength": 400 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

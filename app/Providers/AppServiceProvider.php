@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Services\Artifacts\ArtifactApproved;
+use App\Services\Content\ContentPlanMaterializer;
 use App\Services\Llm\ProviderRegistry;
 use App\Services\Schemas\SchemaRepository;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
 
@@ -18,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Event::listen(ArtifactApproved::class, [ContentPlanMaterializer::class, 'handle']);
+
         // Fakes must never reach production (CLAUDE.md, test isolation).
         if ($this->app->environment('production')) {
             foreach (['llm.provider' => 'LLM_PROVIDER'] as $config => $env) {
