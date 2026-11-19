@@ -25,9 +25,9 @@ enum Tier: string
     {
         return match ($this) {
             self::T0 => '—',
-            self::T1 => 'mis. Claude Haiku 5.5, Gemini Flash',
+            self::T1 => 'mis. Claude Haiku 5.5, Gemini Flash-Lite',
             self::T2 => 'mis. DeepSeek, Claude Sonnet 5.5, Gemini Flash',
-            self::T3 => 'mis. Claude Opus 5.5 (cadangan: GPT)',
+            self::T3 => 'mis. Claude Opus 5.5, Gemini Pro (cadangan: GPT)',
         };
     }
 
