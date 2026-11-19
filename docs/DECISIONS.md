@@ -21,7 +21,7 @@ Setiap entri menyebut ID fitur PRD atau kode celah (K1–K10) terkait.
 - **Validasi semantik umum**: setiap string `kb:<id>` di output harus ada di daftar fakta yang dikirim. Gagal = dianggap output tidak valid (ikut aturan ulang sekali → antrian manual).
 - **Error `bad_request` tidak memicu fallback** (permintaan kita yang salah, bukan penyedianya). Error lain (auth, rate limit, kuota, server, timeout, refusal) pindah ke model cadangan.
 - **Budget**: tugas `normal` ditunda saat ≥ 80 % atau saat estimasi melebihi sisa; `priority` jalan dan turun ke model termurah bila peran mengizinkan; `critical` selalu jalan di model termurah. Event `BudgetThresholdReached` (80/100) dikirim sekali per bulan; listener Telegram menyusul di Minggu 4.
-- **MFA wajib** untuk admin (Filament app authentication + recovery codes). Setelah login pertama, admin diminta memasang aplikasi authenticator.
+- **MFA** untuk admin tersedia (Filament app authentication + recovery codes). ~~Wajib saat login pertama~~ → **opsional** sejak 19 Nov 2026 atas keputusan owner; aktifkan dari halaman Profil. Dashboard tetap hanya bisa diakses dari `localhost`.
 - **Katalog model**: hanya model Claude yang di-seed dengan harga (sumber: daftar harga Anthropic, Nov 2026). Model OpenAI, Gemini, dan DeepSeek ditambah admin di dashboard beserta harganya; model tanpa harga tidak pernah dipakai gateway.
 - **Workspace**: helper/seed memakai "workspace pertama", bukan `firstOrCreate(['id' => 1])` (kolom `id` tidak fillable sehingga cara itu membuat workspace baru setiap kali).
 

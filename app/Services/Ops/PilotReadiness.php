@@ -41,7 +41,7 @@ class PilotReadiness
         $checks[] = $admin === null
             ? new Check('Sistem', 'Akun admin', 'fail', 'Belum ada', 'docker compose exec app php artisan make:filament-user')
             : new Check('Sistem', 'Akun admin', $admin->app_authentication_secret !== null ? 'ok' : 'warn', $admin->email,
-                $admin->app_authentication_secret !== null ? '' : 'Login sekali untuk memasang MFA (wajib).');
+                $admin->app_authentication_secret !== null ? '' : 'Disarankan: aktifkan MFA di halaman Profil (menu akun, kanan atas).');
         $checks[] = new Check('Sistem', 'Telegram admin terhubung', $admin?->getAttribute('telegram_chat_id') !== null ? 'ok' : 'warn', '',
             'Kredensial → Telegram → Hubungkan Telegram saya (untuk pengingat upload & alert).');
 

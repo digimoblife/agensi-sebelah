@@ -13,7 +13,7 @@ docker compose exec app php artisan pilot:check
 
 | # | Langkah | Di mana | Cek |
 | --- | --- | --- | --- |
-| 1 | Buat akun admin, login, pasang MFA | `php artisan make:filament-user` | pilot:check "Akun admin" ✓ |
+| 1 | Buat akun admin, login (MFA opsional, disarankan: Profil → aktifkan) | `php artisan make:filament-user` | pilot:check "Akun admin" ✓ |
 | 2 | API key minimal satu penyedia AI + Tes koneksi | Pengaturan → Kredensial | "API key AI tervalidasi" ✓ |
 | 3 | Tambah model + harga untuk penyedia selain Claude | Pengaturan → Katalog model | kolom "Siap dipakai" ✓ |
 | 4 | Atur model utama + cadangan untuk 7 peran | Pengaturan → Model per peran | baris "Model AI" ✓ |
