@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Enums\CredentialProvider;
 use App\Enums\CredentialStatus;
+use App\Models\User;
 use App\Services\Credentials\ConnectionResult;
 use App\Services\Credentials\ConnectionTesters\GoogleOauthTester;
 use App\Services\Credentials\ConnectionTesters\MetaTester;
@@ -11,6 +12,7 @@ use App\Services\Credentials\ConnectionTesters\TelegramTester;
 use App\Services\Credentials\CredentialStore;
 use App\Services\Credentials\CredentialValidator;
 use App\Services\Llm\ProviderRegistry;
+use App\Services\Telegram\Invites;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
@@ -21,6 +23,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use UnitEnum;
 
@@ -65,6 +68,11 @@ class Credentials extends Page
                 $fields[] = $field['secret'] ? $input->password()->revealable(false) : $input;
             }
 
+            if ($provider === CredentialProvider::Telegram) {
+                $linked = Auth::user()?->getAttribute('telegram_chat_id') !== null;
+                $fields[] = Text::make($linked ? 'Akun Telegram Anda sudah terhubung untuk notifikasi admin.' : 'Hubungkan akun Telegram Anda untuk menerima notifikasi keputusan klien dan alert budget.');
+            }
+
             if ($provider === CredentialProvider::GoogleOauth) {
                 $fields[] = Text::make('Redirect URI: '.url('/oauth/google/callback'))->copyable();
             }
@@ -78,6 +86,9 @@ class Credentials extends Page
                         Action::make("test_{$provider->value}")->label('Tes koneksi')->color('gray')
                             ->disabled(! $store->isComplete($provider))
                             ->action(fn () => $this->testProvider($provider)),
+                        Action::make("link_{$provider->value}")->label('Hubungkan Telegram saya')->color('gray')
+                            ->visible($provider === CredentialProvider::Telegram && $store->isComplete($provider))
+                            ->action(fn () => $this->linkAdminTelegram()),
                         Action::make("delete_{$provider->value}")->label('Hapus')->color('danger')->requiresConfirmation()
                             ->modalDescription('Peran AI yang memakai penyedia ini akan beralih ke model cadangan.')
                             ->hidden($store->status($provider) === null && ! $store->isComplete($provider))
@@ -115,6 +126,20 @@ class Credentials extends Page
         $store->recordTest($provider, $result);
 
         Notification::make()->title($result->message)->{$result->ok ? 'success' : 'danger'}()->send();
+    }
+
+    public function linkAdminTelegram(): void
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        try {
+            $link = app(Invites::class)->forAdmin($user);
+        } catch (\Throwable) {
+            Notification::make()->title('Bot belum bisa dihubungi. Jalankan tes koneksi dulu.')->danger()->send();
+
+            return;
+        }
+        Notification::make()->title('Buka tautan ini di Telegram')->body($link)->persistent()->success()->send();
     }
 
     public function deleteProvider(CredentialProvider $provider): void

@@ -83,4 +83,16 @@ class Client extends Model
     {
         return $this->hasMany(ArtifactVersion::class);
     }
+
+    /** @return HasMany<Asset, $this> */
+    public function assets(): HasMany
+    {
+        return $this->hasMany(Asset::class);
+    }
+
+    /** @return HasMany<ClientContact, $this> */
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(ClientContact::class);
+    }
 }

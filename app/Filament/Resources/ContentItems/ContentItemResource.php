@@ -4,6 +4,8 @@ namespace App\Filament\Resources\ContentItems;
 
 use App\Enums\ContentStatus;
 use App\Jobs\DraftContent;
+use App\Jobs\RenderAndSend;
+use App\Models\Asset;
 use App\Models\Client;
 use App\Models\ContentItem;
 use App\Models\User;
@@ -13,6 +15,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -62,6 +65,13 @@ class ContentItemResource extends Resource
                 TextEntry::make('format'),
                 TextEntry::make('pillar')->label('Pilar'),
                 TextEntry::make('angle')->columnSpanFull(),
+            ]),
+            Section::make('Visual')->visible(fn (ContentItem $r) => ! empty($r->render['assets']))->schema([
+                ImageEntry::make('render_preview')->hiddenLabel()->imageHeight(260)->checkFileExistence(false)
+                    ->state(fn (ContentItem $r) => Asset::query()->whereIn('ulid', $r->render['assets'] ?? [])->get()
+                        ->sortBy(fn (Asset $a) => array_search($a->ulid, $r->render['assets'] ?? [], true))->map(fn (Asset $a) => $a->previewUrl())->values()->all()),
+                TextEntry::make('render.needs_video')->label('Catatan')->visible(fn (ContentItem $r) => (bool) ($r->render['needs_video'] ?? false))
+                    ->formatStateUsing(fn () => 'Format video: gambar ini sampul. Klip video menyusul (fase 2).'),
             ]),
             Section::make('Draf')->visible(fn (ContentItem $r) => $r->draft !== null)->schema([
                 TextEntry::make('draft.hook')->label('Hook')->placeholder('—'),
@@ -125,6 +135,13 @@ class ContentItemResource extends Resource
         return [
             Action::make('view')->label('Lihat')->icon('heroicon-o-eye')->modalSubmitAction(false)
                 ->schema(fn (Schema $schema) => static::infolist($schema)),
+            Action::make('send')->label('Render & kirim ke klien')->icon('heroicon-o-paper-airplane')->color('gray')
+                ->visible(fn (ContentItem $r) => $r->status === ContentStatus::AwaitingApproval)
+                ->requiresConfirmation()->modalDescription('Visual dirender ulang bila draf berubah, lalu dikirim ke kontak approver lewat Telegram.')
+                ->action(function (ContentItem $r) {
+                    dispatch(new RenderAndSend([$r->id]));
+                    Notification::make()->title('Masuk antrian render & kirim.')->success()->send();
+                }),
             Action::make('approve')->label('Setujui')->icon('heroicon-o-check')->color('success')
                 ->visible(fn (ContentItem $r) => $r->status === ContentStatus::AwaitingApproval)
                 ->action(fn (ContentItem $r) => app(ContentReview::class)->approve($r, $actor())),

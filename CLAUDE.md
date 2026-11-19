@@ -14,9 +14,9 @@ Versi 1 dipakai pribadi: satu admin, banyak klien, berjalan lokal di MacBook.
 ## Stack (ADR 0001)
 
 Sama dengan ReportFlow: Laravel 13 (PHP 8.3), PostgreSQL, Redis (queue + Horizon), Filament 5 (dashboard admin),
-Pest, Pint, Larastan. Ditambah: Gotenberg (PDF laporan), service `renderer` Node + Playwright (render template
-visual & screenshot), FFmpeg native macOS untuk video (ADR 0001 §Render).
-Docker Compose lokal: `app`, `worker`, `scheduler`, `telegram-poller`, `postgres`, `redis`, `gotenberg`, `renderer`.
+Pest, Pint, Larastan. Ditambah: Gotenberg (PDF laporan dan render template visual lewat screenshot Chromium,
+ADR 0001 amandemen), FFmpeg native macOS untuk video (Fase 2), SDK resmi Anthropic untuk Claude.
+Docker Compose lokal: `app`, `worker` (Horizon), `scheduler`, `telegram-poller`, `postgres`, `redis`, `gotenberg`, `nginx`.
 
 ## Aturan yang tidak boleh dilanggar
 
@@ -52,7 +52,7 @@ Docker Compose lokal: `app`, `worker`, `scheduler`, `telegram-poller`, `postgres
 - Skema artefak: `resources/schemas/artifacts/<name>.v<N>.schema.json` + contoh di `resources/schemas/examples/`.
 - Semua job idempotent (idempotency key) dan aman di-retry. Payload job hanya membawa id.
 - Di test semua penyedia keluar dipaksa fake (`LLM_PROVIDER=fake`, `TELEGRAM_CLIENT=fake`, `PUBLISHER=fake`,
-  `RENDERER=fake`) dan `Http::preventStrayRequests()` aktif. Tidak ada test yang memanggil API sungguhan.
+  `RENDERER=fake`; ambil instance-nya di test dengan `fakeLlm()`, `fakeTelegram()`, `fakeRenderer()`) dan `Http::preventStrayRequests()` aktif. Tidak ada test yang memanggil API sungguhan.
 
 ## Perintah
 

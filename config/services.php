@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+    // Renders HTML templates to PNG (Chromium screenshot route). RENDERER=fake in tests.
+    'renderer' => [
+        'driver' => env('RENDERER', 'real'),
+        'gotenberg_url' => env('GOTENBERG_URL', 'http://gotenberg:3000'),
+        'timeout' => 60,
+    ],
+
+    // ADR 0004. Bot token comes from Pengaturan > Kredensial, not from here.
+    'telegram' => [
+        'client' => env('TELEGRAM_CLIENT', 'real'),
+        'poll_timeout' => 25,
+        'approval_ttl_days' => 7,
+        'invite_ttl_days' => 7,
+    ],
+
 ];

@@ -107,6 +107,8 @@ class ClientResource extends Resource
             RelationManagers\KnowledgeItemsRelationManager::class,
             RelationManagers\KpiGoalsRelationManager::class,
             RelationManagers\ResearchInputsRelationManager::class,
+            RelationManagers\AssetsRelationManager::class,
+            RelationManagers\ContactsRelationManager::class,
             RelationManagers\ArtifactVersionsRelationManager::class,
         ];
     }

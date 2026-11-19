@@ -30,6 +30,15 @@ return [
 
     'disks' => [
 
+        // F9.3 asset library and rendered visuals. Private: served only through signed routes.
+        'assets' => [
+            'driver' => 'local',
+            'root' => env('ASSETS_DISK_ROOT', storage_path('app/private/assets')),
+            'serve' => false,
+            'throw' => true,
+            'report' => false,
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),

@@ -40,10 +40,9 @@ services:
     <<: *app
     command: ["php", "artisan", "schedule:work"]
 
-  # Telegram long polling (ADR 0004). Enabled once the poller command exists: `docker compose --profile telegram up -d`.
+  # Telegram long polling (ADR 0004). Waits quietly until a bot token is saved in Pengaturan > Kredensial.
   telegram-poller:
     <<: *app
-    profiles: ["telegram"]
     command: ["php", "artisan", "telegram:poll"]
 
   postgres:

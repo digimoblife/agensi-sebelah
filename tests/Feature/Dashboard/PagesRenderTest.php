@@ -32,7 +32,7 @@ it('renders the client edit page with its relation tabs', function () {
 
     Livewire::test(EditClient::class, ['record' => $client->getKey()])
         ->assertSuccessful()
-        ->assertSee(['Profil & onboarding', 'Knowledge base', 'Artefak', 'Bahan riset']);
+        ->assertSee(['Profil & onboarding', 'Knowledge base', 'Artefak', 'Bahan riset', 'Pustaka aset', 'Kontak Telegram']);
 });
 
 it('lists the seeded Claude models as ready to route', function () {

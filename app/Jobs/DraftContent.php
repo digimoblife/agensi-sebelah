@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\ContentStatus;
 use App\Models\Client;
 use App\Models\ContentItem;
 use App\Models\JobRun;
@@ -76,6 +77,11 @@ class DraftContent implements ShouldQueue
         }
 
         $recorder->succeed($run, "awaiting:{$summary['awaiting_approval']},failed:{$summary['guardian_failed']}");
+
+        $ready = ContentItem::query()->whereIn('id', $this->itemIds)->where('status', ContentStatus::AwaitingApproval)->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+        if ($ready !== []) {
+            dispatch(new RenderAndSend(array_values($ready)));
+        }
         $this->notify($run, 'Draf konten selesai',
             "{$summary['awaiting_approval']} menunggu persetujuan, {$summary['guardian_failed']} gagal cek Brand Guardian. Klien: {$client->name}",
             $summary['guardian_failed'] > 0 ? 'warning' : 'success');

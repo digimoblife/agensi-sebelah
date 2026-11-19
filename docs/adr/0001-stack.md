@@ -36,3 +36,12 @@ Render gambar statis tetap di container `renderer`. Video baru dibutuhkan di Fas
   diadaptasi, bukan dijadikan paket bersama. Dibuat paket bersama nanti jika ada project ketiga yang memakainya.
 - Dua runtime (PHP + Node). Node hanya untuk `renderer`, diakses lewat HTTP internal.
 - Seluruh stack berjalan di satu Mac; lihat ADR 0003 untuk perilaku saat Mac mati/sleep.
+
+## Amandemen (Minggu 4, 19 Nov 2026): render gambar lewat Gotenberg
+
+Untuk MVP, render template visual memakai route screenshot Chromium milik Gotenberg
+(`/forms/chromium/screenshot/html`), bukan service Node + Playwright terpisah. Gotenberg sudah ada di stack, sudah
+memakai Chromium, dan bisa menerima HTML + file (logo, foto, font) dalam satu request. Service Node + Playwright
+ditunda sampai benar-benar dibutuhkan (screenshot aplikasi otomatis F9.3, Remotion untuk video di Fase 2).
+Font Google diunduh oleh container `app` (punya akses internet) dan di-cache, karena Gotenberg hanya ada di
+jaringan internal.

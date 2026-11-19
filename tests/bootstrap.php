@@ -30,6 +30,7 @@ foreach ([
     'REDIS_PORT' => '1',
     'REDIS_PASSWORD' => '',
     'GOTENBERG_URL' => 'http://gotenberg.invalid:3000',
+    'ASSETS_DISK_ROOT' => sys_get_temp_dir().'/agensi-test-assets',
     'LLM_PROVIDER' => 'fake',
     'TELEGRAM_CLIENT' => 'fake',
     'PUBLISHER' => 'fake',

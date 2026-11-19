@@ -4,8 +4,10 @@ namespace App\Services\Content;
 
 use App\Enums\ApprovalDecision;
 use App\Enums\ContentStatus;
+use App\Jobs\RenderAndSend;
 use App\Models\Approval;
 use App\Models\ContentItem;
+use App\Services\Render\ContentRenderer;
 use App\Services\Workflow\ContentWorkflow;
 use Illuminate\Support\Facades\DB;
 
@@ -15,14 +17,20 @@ use Illuminate\Support\Facades\DB;
  */
 class ContentReview
 {
-    public function __construct(private readonly ContentWorkflow $workflow) {}
+    public function __construct(private readonly ContentWorkflow $workflow, private readonly ContentRenderer $renderer) {}
 
     public function approve(ContentItem $item, string $actor, string $channel = 'dashboard'): ContentItem
     {
         return DB::transaction(function () use ($item, $actor, $channel) {
             $this->record($item, ApprovalDecision::Approved, $actor, $channel);
+            $this->workflow->transition($item, ContentStatus::Approved, $actor, 'Disetujui');
 
-            return $this->workflow->transition($item, ContentStatus::Approved, $actor, 'Disetujui');
+            // The visual the client approved is the final one: ready for scheduling (week 5).
+            if ($this->renderer->isCurrent($item)) {
+                $this->workflow->transition($item, ContentStatus::Rendered, 'system', 'Visual yang disetujui');
+            }
+
+            return $item;
         });
     }
 
@@ -55,7 +63,10 @@ class ContentReview
     /** The admin releases an item the Guardian failed (e.g. a false positive). */
     public function overrideGuardian(ContentItem $item, string $reason, string $actor): ContentItem
     {
-        return $this->workflow->transition($item, ContentStatus::AwaitingApproval, $actor, 'Diloloskan admin: '.$reason);
+        $this->workflow->transition($item, ContentStatus::AwaitingApproval, $actor, 'Diloloskan admin: '.$reason);
+        dispatch(new RenderAndSend([$item->id]));
+
+        return $item;
     }
 
     /** @param  list<string>  $reasonTags */

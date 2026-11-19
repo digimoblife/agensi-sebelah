@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property CarbonImmutable $publish_date
  * @property ?array<string, mixed> $draft
  * @property ?array<string, mixed> $guardian
+ * @property ?array{assets: list<string>, draft_hash: string, rendered_at: string, needs_video?: bool} $render
  */
 class ContentItem extends Model
 {
@@ -24,7 +25,7 @@ class ContentItem extends Model
     protected $fillable = [
         'workspace_id', 'client_id', 'content_plan_version_id', 'month', 'plan_item_key', 'offering_id', 'platform',
         'format', 'pillar', 'moment_key', 'publish_date', 'publish_time', 'angle', 'cta', 'asset_hint', 'status', 'draft',
-        'guardian', 'revision_comment', 'revision_count', 'auto_revision_count', 'major_revision', 'last_llm_call_id',
+        'guardian', 'render', 'sent_for_approval_at', 'revision_comment', 'revision_count', 'auto_revision_count', 'major_revision', 'last_llm_call_id',
     ];
 
     protected function casts(): array
@@ -34,6 +35,8 @@ class ContentItem extends Model
             'publish_date' => 'immutable_date',
             'draft' => 'array',
             'guardian' => 'array',
+            'render' => 'array',
+            'sent_for_approval_at' => 'immutable_datetime',
             'major_revision' => 'boolean',
         ];
     }
