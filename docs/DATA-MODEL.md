@@ -61,7 +61,7 @@ ops: scheduled_tasks, job_runs, workflow_events, activity_log
 
 | Tabel | Kolom penting | Catatan |
 | --- | --- | --- |
-| `provider_credentials` | workspace_id, provider (`anthropic/openai/gemini/deepseek`), api_key (enc), status, last_tested_at | F9.9, tombol tes koneksi. |
+| `provider_credentials` | workspace_id, provider (`anthropic/openai/gemini/deepseek/telegram/meta/google_oauth/tiktok`), key, value (enc), last4, status, last_tested_at, last_error_code, updated_by | F9.9. Diisi lewat menu Kredensial (`docs/specs/credentials-settings.md`), bukan `.env`. |
 | `model_catalog` | provider, model_id, label, capabilities json (`text/vision/image/video/json_mode/prompt_cache`), price_input_per_mtok, price_output_per_mtok, price_cached_input_per_mtok, price_per_image, price_per_video_second, currency, active | Harga diisi admin. Gateway menghitung biaya dari sini. |
 | `role_configs` | workspace_id, role_key, primary_model_id, fallback_model_id, max_cost_per_call, tier | Pemetaan peran → model; default dari `config/roles.php`. |
 | `llm_calls` | id, ulid, client_id, role_key, task_ref, prompt_key, prompt_version, provider, model_id, attempt, fallback_from_call_id, input_tokens, cached_input_tokens, output_tokens, cost_usd numeric(12,6), latency_ms, status (`ok/schema_invalid/provider_error/rate_limited/budget_blocked`), error_code, request_hash, created_at | F8.4. Tidak menyimpan prompt penuh; simpan `request_hash` + referensi artefak. |
