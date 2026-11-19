@@ -1,0 +1,83 @@
+<?php
+
+/*
+| AI role registry (PRD §Struktur tim AI). A role is a prompt + output schema, not a running agent.
+| Model choice per role lives in role_configs (dashboard); these are the fixed parts.
+|
+| capabilities: what the model must support (checked against model_catalog).
+| artifact_inputs: the only artifacts the role may receive (narrow input contract, PRD principle 6).
+| priority roles may still run (one tier down) when the client budget is degraded.
+*/
+
+return [
+    'brand_strategist' => [
+        'label' => 'Brand Strategist',
+        'tier' => 't3',
+        'prompt' => 'brand_strategist',
+        'prompt_version' => 1,
+        'output_schema' => 'brand_brief.v1',
+        'artifact_inputs' => ['research_pack'],
+        'uses_facts' => true,
+        'capabilities' => ['text'],
+        'effort' => 'high',
+        'max_output_tokens' => 8000,
+        'expected_output_tokens' => 2500,
+        'allow_downgrade' => false,
+    ],
+    'art_director' => [
+        'label' => 'Art Director',
+        'tier' => 't3',
+        'prompt' => 'art_director',
+        'prompt_version' => 1,
+        'output_schema' => 'visual_rules.v1',
+        'artifact_inputs' => ['brand_brief'],
+        'uses_facts' => false,
+        'capabilities' => ['text'],
+        'effort' => 'medium',
+        'max_output_tokens' => 4000,
+        'expected_output_tokens' => 1200,
+        'allow_downgrade' => false,
+    ],
+    'researcher' => [
+        'label' => 'Researcher',
+        'tier' => 't2',
+        'prompt' => 'researcher',
+        'prompt_version' => 1,
+        'output_schema' => 'research_pack.v1',
+        'artifact_inputs' => ['brand_brief'],
+        'uses_facts' => true,
+        'capabilities' => ['text'],
+        'effort' => 'medium',
+        'max_output_tokens' => 8000,
+        'expected_output_tokens' => 3000,
+        'allow_downgrade' => true,
+    ],
+    'content_strategist' => [
+        'label' => 'Content Strategist',
+        'tier' => 't2',
+        'prompt' => 'content_strategist',
+        'prompt_version' => 1,
+        'output_schema' => 'content_plan.v1',
+        'artifact_inputs' => ['brand_brief', 'research_pack'],
+        'uses_facts' => true,
+        'capabilities' => ['text'],
+        'effort' => 'medium',
+        'max_output_tokens' => 12000,
+        'expected_output_tokens' => 5000,
+        'allow_downgrade' => true,
+    ],
+    'copywriter' => [
+        'label' => 'Copywriter',
+        'tier' => 't2',
+        'prompt' => 'copywriter',
+        'prompt_version' => 1,
+        'output_schema' => 'content_batch.v1',
+        'artifact_inputs' => ['brand_brief', 'visual_rules'],
+        'uses_facts' => true,
+        'capabilities' => ['text'],
+        'effort' => 'low',
+        'max_output_tokens' => 16000,
+        'expected_output_tokens' => 8000,
+        'allow_downgrade' => true,
+    ],
+];

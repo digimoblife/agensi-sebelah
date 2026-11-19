@@ -34,6 +34,10 @@ foreach ([
     'TELEGRAM_CLIENT' => 'fake',
     'PUBLISHER' => 'fake',
     'RENDERER' => 'fake',
+    'ANTHROPIC_API_KEY' => '',
+    'ANTHROPIC_AUTH_TOKEN' => '',
+    'ANTHROPIC_BASE_URL' => '',
+    'OPENAI_API_KEY' => '',
     'AWS_ACCESS_KEY_ID' => '',
     'AWS_SECRET_ACCESS_KEY' => '',
 ] as $name => $value) {

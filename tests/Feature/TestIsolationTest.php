@@ -14,6 +14,8 @@ it('pins every external service to a fake or unreachable value', function (strin
     ['RENDERER', 'fake'],
     ['QUEUE_CONNECTION', 'sync'],
     ['CACHE_STORE', 'array'],
+    ['ANTHROPIC_API_KEY', ''],
+    ['ANTHROPIC_AUTH_TOKEN', ''],
 ]);
 
 it('blocks stray outgoing HTTP requests', function () {
