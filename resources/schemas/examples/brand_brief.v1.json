@@ -1,0 +1,45 @@
+{
+  "meta": { "artifact_type": "brand_brief", "schema_version": 1, "client_id": 1, "version": 1, "language": "id", "source_refs": ["kb:1", "kb:2", "research_pack@1"] },
+  "business": {
+    "name": "Studio Kriya Contoh",
+    "one_liner": "Workshop kerajinan tangan akhir pekan untuk orang kota yang ingin rehat dari layar.",
+    "category": "Workshop kreatif",
+    "offering_types": ["event_ticket"],
+    "primary_goal": "Booking tiket workshop 120 per bulan",
+    "locations": ["Yogyakarta"]
+  },
+  "audiences": [
+    {
+      "name": "Pekerja muda kota",
+      "description": "Usia 22-35, kerja kantoran/remote, mencari aktivitas akhir pekan yang bermakna.",
+      "pains": ["Lelah menatap layar", "Bingung mengisi akhir pekan"],
+      "motivations": ["Membuat sesuatu dengan tangan sendiri", "Konten untuk dibagikan"],
+      "objections": ["Takut tidak berbakat", "Harga tiket"]
+    }
+  ],
+  "positioning": {
+    "value_proposition": "Tiga jam, tanpa pengalaman, pulang membawa karya sendiri.",
+    "differentiators": ["Kelas kecil maksimal 10 orang", "Semua bahan disediakan"],
+    "competitors": ["Workshop Lain A"],
+    "proof_points": [{ "text": "Kelas maksimal 10 peserta", "kb_ref": "kb:2" }]
+  },
+  "voice": {
+    "traits": ["hangat", "membumi", "mengajak"],
+    "formality": "santai",
+    "person": "kamu",
+    "emoji_policy": "sparing",
+    "sample_phrases": ["Pelan-pelan saja, tanganmu akan ingat."],
+    "banned_words": ["termurah", "dijamin"]
+  },
+  "pillars": [
+    { "key": "process", "name": "Proses berkarya", "purpose": "Menunjukkan bahwa siapa pun bisa", "share_pct": 40 },
+    { "key": "results", "name": "Hasil peserta", "purpose": "Bukti sosial dari karya nyata", "share_pct": 30 },
+    { "key": "booking", "name": "Jadwal & booking", "purpose": "Mendorong konversi", "share_pct": 30 }
+  ],
+  "ctas": [{ "text": "Pesan kursimu", "conversion_event": "ticket_booking" }],
+  "rules": {
+    "do": [{ "text": "Sebut jumlah kursi tersisa hanya dari data jadwal", "origin": "onboarding" }],
+    "avoid": [{ "text": "Jangan memakai foto hasil karya yang bukan dari peserta", "origin": "onboarding" }],
+    "compliance": ["Cantumkan kebijakan refund saat menyebut harga tiket"]
+  }
+}

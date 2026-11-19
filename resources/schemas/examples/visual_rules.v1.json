@@ -1,0 +1,18 @@
+{
+  "meta": { "artifact_type": "visual_rules", "schema_version": 1, "client_id": 1, "version": 1 },
+  "colors": { "primary": "#8A4B2A", "secondary": "#E8D5B7", "accent": "#2F6B4F", "background": "#FAF6F0", "text": "#2B2118" },
+  "typography": { "heading_font": "Fraunces", "body_font": "Inter", "max_headline_chars": 40 },
+  "logo": { "asset_id": "01JD0000000000000000000000", "placement": "bottom_right", "min_width_px": 120 },
+  "templates": [
+    { "key": "feed_quote", "format": "feed_image", "use_for": ["process", "quote"] },
+    { "key": "carousel_steps", "format": "carousel", "use_for": ["process"] },
+    { "key": "story_schedule", "format": "story", "use_for": ["booking"] }
+  ],
+  "imagery": {
+    "style": "Foto natural, cahaya hangat, close-up tangan dan bahan.",
+    "prefer_sources": ["client", "ugc", "stock"],
+    "ai_allowed_for": ["latar tekstur", "ilustrasi suasana"],
+    "ai_forbidden_for": ["hasil karya peserta", "foto tempat workshop", "wajah orang"],
+    "image_prompt_suffix": "warm natural light, earthy palette, no text, no faces"
+  }
+}

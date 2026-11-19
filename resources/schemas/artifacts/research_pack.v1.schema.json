@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agensi-sebelah.local/schemas/research_pack.v1.schema.json",
+  "title": "Research Pack",
+  "description": "Ringkasan riset (target <= 2.000 token). Data dikumpulkan T0, dirangkum T2. Setiap klaim menyebut sumber.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "period", "competitors", "trends", "keywords", "opportunities"],
+  "properties": {
+    "meta": { "$ref": "_common.v1.schema.json#/$defs/meta" },
+    "period": {
+      "type": "object", "additionalProperties": false, "required": ["from", "to"],
+      "properties": { "from": { "$ref": "_common.v1.schema.json#/$defs/date" }, "to": { "$ref": "_common.v1.schema.json#/$defs/date" } }
+    },
+    "sources": {
+      "type": "array", "maxItems": 30,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["id", "kind", "ref"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^s[0-9]{1,3}$" },
+          "kind": { "type": "string", "enum": ["website", "ad_library", "google_trends", "serp", "social_public", "manual_note"] },
+          "ref": { "type": "string", "maxLength": 300 }
+        }
+      }
+    },
+    "competitors": {
+      "type": "array", "maxItems": 5,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["name", "observations", "source_ids"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 80 },
+          "observations": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "type": "string", "maxLength": 160 } },
+          "source_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^s[0-9]{1,3}$" } }
+        }
+      }
+    },
+    "trends": {
+      "type": "array", "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["topic", "relevance", "source_ids"],
+        "properties": {
+          "topic": { "type": "string", "maxLength": 100 },
+          "relevance": { "type": "string", "maxLength": 160 },
+          "source_ids": { "type": "array", "items": { "type": "string", "pattern": "^s[0-9]{1,3}$" } }
+        }
+      }
+    },
+    "keywords": {
+      "type": "array", "maxItems": 20,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["term", "intent"],
+        "properties": {
+          "term": { "type": "string", "maxLength": 80 },
+          "intent": { "type": "string", "enum": ["informational", "commercial", "transactional", "navigational", "local"] },
+          "volume": { "type": ["integer", "null"], "minimum": 0, "description": "Dari tool T0; null jika tidak tersedia. LLM tidak boleh mengarang angka." }
+        }
+      }
+    },
+    "personas_update": { "type": "array", "maxItems": 4, "items": { "type": "string", "maxLength": 200 } },
+    "opportunities": {
+      "type": "array", "minItems": 1, "maxItems": 6,
+      "items": { "type": "string", "maxLength": 200 }
+    }
+  }
+}

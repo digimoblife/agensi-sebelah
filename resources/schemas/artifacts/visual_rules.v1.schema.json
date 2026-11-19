@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agensi-sebelah.local/schemas/visual_rules.v1.schema.json",
+  "title": "Visual Rules",
+  "description": "Aturan visual brand (target <= 800 token). Dipakai renderer (T0) dan Brand Guardian. Dibuat Art Director (T3, sekali).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "colors", "typography", "logo", "templates", "imagery"],
+  "properties": {
+    "meta": { "$ref": "_common.v1.schema.json#/$defs/meta" },
+    "colors": {
+      "type": "object", "additionalProperties": false, "required": ["primary", "secondary", "background", "text"],
+      "properties": {
+        "primary": { "$ref": "_common.v1.schema.json#/$defs/hexColor" },
+        "secondary": { "$ref": "_common.v1.schema.json#/$defs/hexColor" },
+        "accent": { "$ref": "_common.v1.schema.json#/$defs/hexColor" },
+        "background": { "$ref": "_common.v1.schema.json#/$defs/hexColor" },
+        "text": { "$ref": "_common.v1.schema.json#/$defs/hexColor" }
+      }
+    },
+    "typography": {
+      "type": "object", "additionalProperties": false, "required": ["heading_font", "body_font"],
+      "properties": {
+        "heading_font": { "type": "string", "maxLength": 60 },
+        "body_font": { "type": "string", "maxLength": 60 },
+        "max_headline_chars": { "type": "integer", "minimum": 10, "maximum": 120, "default": 45 }
+      }
+    },
+    "logo": {
+      "type": "object", "additionalProperties": false, "required": ["asset_id", "placement"],
+      "properties": {
+        "asset_id": { "type": "string" },
+        "placement": { "type": "string", "enum": ["top_left", "top_right", "bottom_left", "bottom_right", "bottom_center"] },
+        "min_width_px": { "type": "integer", "minimum": 40, "default": 120 }
+      }
+    },
+    "templates": {
+      "type": "array", "minItems": 1, "maxItems": 12,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["key", "format", "use_for"],
+        "properties": {
+          "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,40}$", "description": "Nama folder template di templates/visual/<client>/." },
+          "format": { "$ref": "_common.v1.schema.json#/$defs/format" },
+          "use_for": { "type": "array", "minItems": 1, "maxItems": 6, "items": { "type": "string", "maxLength": 40 } }
+        }
+      }
+    },
+    "imagery": {
+      "type": "object", "additionalProperties": false, "required": ["style", "prefer_sources"],
+      "properties": {
+        "style": { "type": "string", "maxLength": 240 },
+        "prefer_sources": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": { "type": "string", "enum": ["client", "ugc", "auto", "ai", "stock"] }
+        },
+        "ai_allowed_for": { "type": "array", "maxItems": 6, "items": { "type": "string", "maxLength": 60 } },
+        "ai_forbidden_for": { "type": "array", "maxItems": 10, "items": { "type": "string", "maxLength": 80 } },
+        "image_prompt_suffix": { "type": "string", "maxLength": 300 }
+      }
+    }
+  }
+}

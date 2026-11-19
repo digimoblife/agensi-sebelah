@@ -1,0 +1,10 @@
+{
+  "meta": { "artifact_type": "kpi_snapshot", "schema_version": 1, "client_id": 1, "version": 1 },
+  "period": { "from": "2026-11-10", "to": "2026-11-16", "compare_from": "2026-11-03", "compare_to": "2026-11-09" },
+  "rows": [
+    { "metric_key": "ticket_booking", "label": "Booking tiket", "source": "ga4", "value": 28, "previous": 22, "change_pct": 27.27, "target": 30, "is_primary_goal": true },
+    { "metric_key": "ig_reach", "label": "Jangkauan IG", "source": "instagram", "value": 15400, "previous": null, "change_pct": null, "target": null }
+  ],
+  "top_content": [{ "content_item_id": 12, "metric_key": "ig_saves", "value": 210 }],
+  "data_quality": ["GA4: data 16 Nov belum final"]
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agensi-sebelah.local/schemas/content_item.v1.schema.json",
+  "title": "Content Item",
+  "description": "Draft satu konten. Copywriter/Scriptwriter menghasilkan array item ini dalam satu panggilan batch; backend memecahnya per baris content_items.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["plan_item_key", "platform", "format", "caption", "hashtags", "visual"],
+  "properties": {
+    "plan_item_key": { "type": "string", "pattern": "^[a-z0-9_-]{2,40}$" },
+    "platform": { "$ref": "_common.v1.schema.json#/$defs/platform" },
+    "format": { "$ref": "_common.v1.schema.json#/$defs/format" },
+    "hook": { "type": "string", "maxLength": 120 },
+    "caption": { "type": "string", "minLength": 1, "maxLength": 2200, "description": "Batas IG 2.200 karakter; Brand Guardian T0 mengecek batas per platform." },
+    "hashtags": { "type": "array", "maxItems": 30, "items": { "type": "string", "pattern": "^#[\\p{L}\\p{N}_]{1,60}$" } },
+    "cta": { "type": "string", "maxLength": 60 },
+    "link": { "type": ["string", "null"], "format": "uri" },
+    "slides": {
+      "type": "array", "maxItems": 10,
+      "description": "Untuk carousel: teks per slide yang diisi ke template.",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["headline"],
+        "properties": {
+          "headline": { "type": "string", "maxLength": 60 },
+          "body": { "type": "string", "maxLength": 200 }
+        }
+      }
+    },
+    "script": {
+      "type": "array", "maxItems": 12,
+      "description": "Untuk reel/short_video (Scriptwriter, Fase 2).",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["shot", "seconds", "voiceover"],
+        "properties": {
+          "shot": { "type": "string", "maxLength": 160 },
+          "seconds": { "type": "number", "minimum": 0.5, "maximum": 60 },
+          "voiceover": { "type": "string", "maxLength": 240 },
+          "on_screen_text": { "type": "string", "maxLength": 60 }
+        }
+      }
+    },
+    "visual": {
+      "type": "object", "additionalProperties": false, "required": ["mode"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["template", "asset", "ai_image", "ai_video"] },
+        "template_key": { "type": ["string", "null"] },
+        "headline": { "type": "string", "maxLength": 60 },
+        "asset_query": { "type": "string", "maxLength": 160, "description": "Deskripsi aset yang dicari di pustaka; backend yang memilih asset_id." },
+        "image_prompt": { "type": "string", "maxLength": 800 }
+      }
+    },
+    "fact_refs": {
+      "type": "array", "maxItems": 10,
+      "description": "Knowledge item yang menjadi dasar fakta (harga, jadwal, kebijakan). Wajib jika caption menyebut fakta.",
+      "items": { "$ref": "_common.v1.schema.json#/$defs/kbRef" }
+    },
+    "ai_label_required": { "type": "boolean", "default": false }
+  }
+}

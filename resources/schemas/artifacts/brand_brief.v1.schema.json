@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agensi-sebelah.local/schemas/brand_brief.v1.schema.json",
+  "title": "Brand Brief",
+  "description": "Profil klien terkompresi (target <= 1.500 token). Selalu ditaruh di awal prompt agar ter-cache. Dibuat Brand Strategist (T3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "business", "audiences", "positioning", "voice", "pillars", "rules"],
+  "properties": {
+    "meta": { "$ref": "_common.v1.schema.json#/$defs/meta" },
+    "business": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "one_liner", "category", "offering_types", "primary_goal"],
+      "properties": {
+        "name": { "$ref": "_common.v1.schema.json#/$defs/shortText" },
+        "one_liner": { "type": "string", "maxLength": 160 },
+        "category": { "type": "string", "maxLength": 80 },
+        "offering_types": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": { "$ref": "_common.v1.schema.json#/$defs/offeringType" }
+        },
+        "primary_goal": { "type": "string", "maxLength": 160, "description": "Mengacu kpi_goals prioritas tertinggi (F9.8)." },
+        "locations": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 80 } }
+      }
+    },
+    "audiences": {
+      "type": "array", "minItems": 1, "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "description", "pains", "motivations"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 60 },
+          "description": { "type": "string", "maxLength": 240 },
+          "pains": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "type": "string", "maxLength": 120 } },
+          "motivations": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "type": "string", "maxLength": 120 } },
+          "objections": { "type": "array", "maxItems": 4, "items": { "type": "string", "maxLength": 120 } }
+        }
+      }
+    },
+    "positioning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value_proposition", "differentiators"],
+      "properties": {
+        "value_proposition": { "type": "string", "maxLength": 240 },
+        "differentiators": { "type": "array", "minItems": 1, "maxItems": 5, "items": { "type": "string", "maxLength": 120 } },
+        "competitors": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 80 } },
+        "proof_points": {
+          "type": "array", "maxItems": 6,
+          "description": "Hanya fakta dari knowledge base; wajib menyertakan kb_ref.",
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["text", "kb_ref"],
+            "properties": { "text": { "type": "string", "maxLength": 140 }, "kb_ref": { "$ref": "_common.v1.schema.json#/$defs/kbRef" } }
+          }
+        }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["traits", "formality", "person", "emoji_policy"],
+      "properties": {
+        "traits": { "type": "array", "minItems": 2, "maxItems": 5, "items": { "type": "string", "maxLength": 40 } },
+        "formality": { "type": "string", "enum": ["santai", "semi_formal", "formal"] },
+        "person": { "type": "string", "description": "Sapaan ke audiens, mis. 'kamu', 'Anda', 'Kak'.", "maxLength": 20 },
+        "emoji_policy": { "type": "string", "enum": ["none", "sparing", "frequent"] },
+        "sample_phrases": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 120 } },
+        "banned_words": { "type": "array", "maxItems": 30, "items": { "type": "string", "maxLength": 40 } }
+      }
+    },
+    "pillars": {
+      "type": "array", "minItems": 2, "maxItems": 6,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["key", "name", "purpose", "share_pct"],
+        "properties": {
+          "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,30}$" },
+          "name": { "type": "string", "maxLength": 50 },
+          "purpose": { "type": "string", "maxLength": 140 },
+          "share_pct": { "type": "integer", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+    "ctas": {
+      "type": "array", "maxItems": 5,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["text", "conversion_event"],
+        "properties": {
+          "text": { "type": "string", "maxLength": 60 },
+          "conversion_event": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,40}$" }
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["do", "avoid"],
+      "description": "Diperbarui dari ringkasan alasan revisi (F9.4). Setiap aturan baru menyebut asal.",
+      "properties": {
+        "do": { "type": "array", "maxItems": 12, "items": { "$ref": "#/$defs/rule" } },
+        "avoid": { "type": "array", "maxItems": 12, "items": { "$ref": "#/$defs/rule" } },
+        "compliance": {
+          "type": "array", "maxItems": 10,
+          "description": "Aturan kepatuhan per kategori, mis. klaim tumbuh kembang anak, kebijakan refund tiket.",
+          "items": { "type": "string", "maxLength": 160 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object", "additionalProperties": false, "required": ["text", "origin"],
+      "properties": {
+        "text": { "type": "string", "maxLength": 140 },
+        "origin": { "type": "string", "enum": ["onboarding", "revision_feedback", "performance", "admin"] }
+      }
+    }
+  }
+}

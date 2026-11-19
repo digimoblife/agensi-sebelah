@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agensi-sebelah.local/schemas/_common.v1.schema.json",
+  "title": "Common definitions",
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "description": "Diisi backend, bukan LLM. Gateway menimpa nilai dari LLM.",
+      "additionalProperties": false,
+      "required": ["artifact_type", "schema_version", "client_id"],
+      "properties": {
+        "artifact_type": { "type": "string" },
+        "schema_version": { "type": "integer", "minimum": 1 },
+        "client_id": { "type": "integer", "minimum": 1 },
+        "version": { "type": "integer", "minimum": 1 },
+        "language": { "type": "string", "enum": ["id", "en"], "default": "id" },
+        "source_refs": {
+          "type": "array",
+          "description": "Referensi artefak/knowledge item yang dipakai sebagai input, mis. brand_brief@3, kb:42.",
+          "items": { "type": "string", "pattern": "^[a-z_]+(@[0-9]+|:[0-9]+)$" },
+          "maxItems": 50
+        }
+      }
+    },
+    "shortText": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "mediumText": { "type": "string", "minLength": 1, "maxLength": 600 },
+    "platform": {
+      "type": "string",
+      "enum": ["instagram", "facebook", "tiktok", "google_business_profile", "wordpress", "youtube", "whatsapp"]
+    },
+    "format": {
+      "type": "string",
+      "enum": ["feed_image", "carousel", "story", "reel", "short_video", "article", "gbp_post", "ad_copy"]
+    },
+    "offeringType": {
+      "type": "string",
+      "enum": ["event_ticket", "digital_app", "service", "physical_product", "content_community"]
+    },
+    "kbRef": { "type": "string", "pattern": "^kb:[0-9]+$" },
+    "hexColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+    "date": { "type": "string", "format": "date" },
+    "dateTime": { "type": "string", "format": "date-time" }
+  }
+}

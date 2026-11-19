@@ -1,0 +1,18 @@
+{
+  "meta": { "artifact_type": "research_pack", "schema_version": 1, "client_id": 1, "version": 1 },
+  "period": { "from": "2026-11-01", "to": "2026-11-18" },
+  "sources": [
+    { "id": "s1", "kind": "website", "ref": "https://example.com/kompetitor-a" },
+    { "id": "s2", "kind": "manual_note", "ref": "Catatan admin 18 Nov" }
+  ],
+  "competitors": [
+    { "name": "Workshop Lain A", "observations": ["Fokus paket korporat", "Jarang posting proses"], "source_ids": ["s1"] }
+  ],
+  "trends": [
+    { "topic": "Aktivitas offline akhir pekan", "relevance": "Cocok dengan pilar proses berkarya", "source_ids": ["s2"] }
+  ],
+  "keywords": [
+    { "term": "workshop kerajinan jogja", "intent": "local", "volume": null }
+  ],
+  "opportunities": ["Konten 'sebelum-sesudah' karya peserta pemula menjelang libur akhir tahun"]
+}

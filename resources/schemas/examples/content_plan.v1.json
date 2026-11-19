@@ -1,0 +1,10 @@
+{
+  "meta": { "artifact_type": "content_plan", "schema_version": 1, "client_id": 1, "version": 1, "source_refs": ["brand_brief@1", "research_pack@1"] },
+  "month": "2026-12",
+  "campaign_ref": null,
+  "focus": "Isi kursi workshop libur akhir tahun",
+  "items": [
+    { "key": "dec-01-process", "date": "2026-12-01", "time": "19:00", "platform": "instagram", "format": "carousel", "pillar": "process", "offering_id": 1, "moment_key": null, "angle": "5 langkah dari tanah liat ke cangkir pertamamu", "cta": "Pesan kursimu", "asset_hint": "foto proses tangan" },
+    { "key": "dec-12-harbolnas", "date": "2026-12-12", "time": "12:00", "platform": "instagram", "format": "story", "pillar": "booking", "offering_id": 1, "moment_key": "harbolnas_1212", "angle": "Jadwal workshop libur sekolah sudah buka", "cta": "Pesan kursimu", "asset_hint": null }
+  ]
+}

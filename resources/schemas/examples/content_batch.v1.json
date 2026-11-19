@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "plan_item_key": "dec-01-process",
+      "platform": "instagram",
+      "format": "carousel",
+      "hook": "Belum pernah pegang tanah liat? Justru itu.",
+      "caption": "Tiga jam, satu meja, dan tanganmu sendiri. Geser untuk lihat lima langkahnya. Kelas kecil, maksimal 10 orang.",
+      "hashtags": ["#workshopjogja", "#kerajinantangan"],
+      "cta": "Pesan kursimu",
+      "link": null,
+      "slides": [
+        { "headline": "1. Kenali tanahnya", "body": "Instruktur mendampingi dari awal." },
+        { "headline": "2. Bentuk dasar" }
+      ],
+      "visual": { "mode": "template", "template_key": "carousel_steps", "headline": "5 langkah cangkir pertamamu", "asset_query": "close-up tangan membentuk tanah liat" },
+      "fact_refs": ["kb:2"],
+      "ai_label_required": false
+    }
+  ]
+}

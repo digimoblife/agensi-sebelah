@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agensi-sebelah.local/schemas/content_plan.v1.schema.json",
+  "title": "Content Plan",
+  "description": "Rencana konten bulanan, satu baris per item (F2.3). Dibuat Content Strategist. Setiap item menjadi content_items.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "month", "items"],
+  "properties": {
+    "meta": { "$ref": "_common.v1.schema.json#/$defs/meta" },
+    "month": { "type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$" },
+    "campaign_ref": { "type": ["string", "null"], "pattern": "^campaign_brief@[0-9]+$" },
+    "focus": { "type": "string", "maxLength": 240 },
+    "items": {
+      "type": "array", "minItems": 1, "maxItems": 90,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["key", "date", "platform", "format", "pillar", "angle", "cta"],
+        "properties": {
+          "key": { "type": "string", "pattern": "^[a-z0-9_-]{2,40}$", "description": "Unik dalam plan; dipakai untuk revisi parsial." },
+          "date": { "$ref": "_common.v1.schema.json#/$defs/date" },
+          "time": { "type": ["string", "null"], "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+          "platform": { "$ref": "_common.v1.schema.json#/$defs/platform" },
+          "format": { "$ref": "_common.v1.schema.json#/$defs/format" },
+          "pillar": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,30}$" },
+          "offering_id": { "type": ["integer", "null"] },
+          "moment_key": { "type": ["string", "null"], "description": "Kunci dari moment_calendar (F9.7)." },
+          "angle": { "type": "string", "maxLength": 160 },
+          "cta": { "type": "string", "maxLength": 60 },
+          "asset_hint": { "type": ["string", "null"], "maxLength": 120 }
+        }
+      }
+    }
+  }
+}
